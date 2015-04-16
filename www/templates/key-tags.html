@@ -1,0 +1,22 @@
+<ion-view view-title="{{ title }}">
+	<ion-nav-buttons side="right">
+		<!-- @todo: edit button -->
+		<button class="button button-icon button-clear button-assertive icon ion-ios-close" ng-click="deleteCurrentTag()"></button>
+		<button class="button button-icon button-clear button-energized icon ion-android-alert" ng-click="currentTagFailed()"></button>
+		<button class="button button-icon button-clear button-balanced icon ion-ios-checkmark" ng-click="currentTagWorked()"></button>
+		<!-- <button class="button button-icon icon ion-android-more-vertical" ng-click="toggleTagMenu()"></button> -->
+	</ion-nav-buttons>
+	<ion-content padding="true">
+		<ion-slide-box show-pager="true" on-slide-changed="setDisplayedTagIndex(index)">
+			<ion-slide class="padding" ng-repeat="tag in tags" ng-controller="TagDetailController" ng-init="init(tag)">
+				<div ng-click="useTag(tag)">
+					<key-tag tag="tag"></key-tag>
+					<p>Tap to use KeyTag</p>
+				</div>
+			</ion-slide>
+			<ion-slide class="padding" ng-controller="NewTagController">
+				<key-tag-scanner on-success="manualSuccess(scanResponse)" on-scan-success="scanSuccess(scanResponse)" on-scan-error="scanError(error)" on-cancel="cancelCreation()"></key-tag-scanner>
+			</ion-slide>
+		</ion-slide-box>
+	</ion-content>
+</ion-view>
