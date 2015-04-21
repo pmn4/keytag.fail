@@ -1,32 +1,12 @@
-<div class="list">
-	<div class="item card" padding="true">
-		<h1 ng-hide="editing.name">{{ tag.name }}</h1>
-		<form ng-show="editing.name">
-			<label for="tag-name" class="item item-input">
-				<span class="input-label">Name</span>
-				<input type="text" id="tag-name" name="tag-name" ng-model="tag.name" ng-blur="updateTag(tag)" />
-			</label>
-		</form>
-		<p ng-hide="editing.description">{{ tag.description }}</p>
-		<form ng-show="editing.description">
-			<label for="tag-description" class="item item-input">
-				<span class="input-label">Description</span>
-				<input type="text" id="tag-description" name="tag-description" ng-model="tag.description" ng-blur="updateTag(tag)" />
-			</label>
-		</form>
-		<button ng-click="encode(tag)" class="button button-block">Encode</button>
-		<hr />
-		<pre>
-			{{ tag.barcode | jsonFormatter }}
-		</pre>
-		<hr />
-		<pre>
-			encoded: {{ encoded }}
-		</pre>
-		<hr />
-		<pre>
-			done: {{ done }}
-		</pre>
-		<img ng-src="data:image/png;base64,{{ encoded }}" style="width:100px;height:20px;" />
-	</div>
+<div padding="true">
+	<form>
+		<label class="item item-input">
+			<span class="input-label">Issuer</span>
+			<input type="text" name="tag-issuer" ng-model="tag.issuer" placeholder="ex. Starbucks, A&amp;P" />
+		</label>
+		<label class="item item-input">
+			<span class="input-label">Note</span>
+			<input type="text" name="tag-description" ng-model="tag.description" />
+		</label>
+	</form>
 </div>

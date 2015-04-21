@@ -1,0 +1,5 @@
+<ion-view view-title="Got Questions? Got Answers.">
+	<ion-content padding="true" class="new-tag" ng-controller="TagCreateController">
+		<key-tag-scanner on-success="manualSuccess(scanResponse)" on-scan-success="scanSuccess(scanResponse)" on-scan-error="scanError(error)" on-cancel="cancelCreation()"></key-tag-scanner>
+	</ion-content>
+</ion-view>

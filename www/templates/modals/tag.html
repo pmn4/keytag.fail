@@ -1,0 +1,29 @@
+<div class="modal key-tag for-scan">
+	<div class="bar bar-header bar-transparent">
+		<button class="button button-icon pull-right icon ion-close" ng-click="hideTag()"></button>
+	</div>
+	<div class="row">
+		<div class="col col-50 col-offset-25">
+			<barcode tag="tag" class="tag-barcode"></barocde>
+		</div>
+	</div>
+	<div>
+		<div ng-show="success === true">
+			<h6 class="light">Nailed it!</h6>
+			<img src="/img/success.gif" width="100%" height="auto" />
+		</div>
+		<div ng-show="success === false">
+			<h6 class="light">Hmm, ok, give me some time, I'll get better</h6>
+			<img src="/img/failure.gif" width="100%" height="auto" />
+		</div>
+	</div>
+	<div class="bar bar-footer bar-transparent">
+		<button class="button button-clear button-balanced" ng-click="scanSuccess()">
+			It Worked!
+		</button>
+		<span class="title stable">Did it work?</span>
+		<button class="button button-clear button-assertive" ng-click="scanFailure()">
+			Nope...
+		</button>
+	</div>
+</div>

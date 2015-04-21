@@ -18,7 +18,8 @@
     "org.apache.cordova.device",
     "org.apache.cordova.console",
     "com.ionic.keyboard",
-    "com.phonegap.plugins.barcodescanner"
+    "com.phonegap.plugins.barcodescanner",
+    "com.google.cordova.admob"
   ],
   "cordovaPlatforms": [
     "ios",

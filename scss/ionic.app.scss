@@ -30,3 +30,39 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 .slider {
 	min-height: 100%;
 }
+.new-tag {
+	padding-top: 20vw;
+}
+.tag-barcode {
+	.barcode {
+		width: 100%;
+		image-rendering: pixelated;
+	}
+}
+
+.modal.key-tag {
+	padding-top: 25%;
+	background: black; // no messing around with variables here
+	color: white;
+
+	canvas.barcode {
+		border-width: 20px;
+		border-style: solid;
+	}
+
+	.bar-footer {
+		border-top-width: 1px;
+		border-top-style: solid;
+	}
+}
+.bar-transparent {
+	background: transparent;
+}
+.badge {
+	&.usage-success {
+		right: $item-padding * 4; // as defined in _item.scss: .item .badge
+	}
+	&.usage-failure {
+		right: $item-padding * 2; // as defined in _item.scss: .item .badge
+	}
+}

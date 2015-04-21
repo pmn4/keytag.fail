@@ -10,9 +10,8 @@
 
 	angular.module(TagsApp.name + ".constants", [])
 		.constant("AppConfig", {
-			templatesPath: templatesPath /*,
-			gaTrackingId: location.href.indexOf("localhost") >= 0 ? "UA-58511871-0" : "UA-58511871-1"
-			*/
+			templatesPath: templatesPath,
+			gaTrackingId: location.href.indexOf("localhost") >= 0 ? "UA-58511871-0" : "UA-45875189-4"
 		})
 		.constant("AppEnvironment", {
 			device: !!window.cordova ? "native" : "webapp",
@@ -20,4 +19,4 @@
 			nativeApp: !!window.cordova
 		})
 	;
-})(TagsApp, angular, window.location);
+})(window.TagsApp, window.angular, window.location);

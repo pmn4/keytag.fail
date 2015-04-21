@@ -24,6 +24,40 @@
 		<!-- your app's js -->
 		<script src="lib/angular-local-storage/dist/angular-local-storage.min.js"></script>
 
+		<script>
+			var Module = window.Module || {};
+			Module.memoryInitializerPrefixURL = "lib/bwip-js/";
+		</script>
+
+		<script src="lib/bwip-js/freetype.js"></script>
+		<script src="lib/bwip-js/bwip.js"></script>
+			<script src="lib/bwip-js/lib/canvas.js"></script>
+
+			<script src="lib/bwip-js/bwipp/raiseerror.js"></script>
+			<script src="lib/bwip-js/bwipp/renlinear.js"></script>
+			<script src="lib/bwip-js/bwipp/renmatrix.js"></script>
+			<script src="lib/bwip-js/bwipp/ean2.js"></script>
+			<script src="lib/bwip-js/bwipp/ean5.js"></script>
+			<script src="lib/bwip-js/bwipp/interleaved2of5.js"></script>
+
+			<!-- barcode styles -->
+			<script src="lib/bwip-js/bwipp/azteccode.js"></script>
+			<!-- <script src="lib/bwip-js/bwipp/codabar.js"></script> -->
+			<script src="lib/bwip-js/bwipp/code128.js"></script>
+			<script src="lib/bwip-js/bwipp/code39.js"></script>
+			<script src="lib/bwip-js/bwipp/code93.js"></script>
+			<script src="lib/bwip-js/bwipp/datamatrix.js"></script>
+			<script src="lib/bwip-js/bwipp/ean13.js"></script>
+			<script src="lib/bwip-js/bwipp/ean8.js"></script>
+			<script src="lib/bwip-js/bwipp/itf14.js"></script>
+			<script src="lib/bwip-js/bwipp/msi.js"></script>
+			<script src="lib/bwip-js/bwipp/pdf417.js"></script>
+			<script src="lib/bwip-js/bwipp/qrcode.js"></script>
+			<!-- <script src="lib/bwip-js/bwipp/rss14.js"></script> -->
+			<!-- <script src="lib/bwip-js/bwipp/rss_expanded.js"></script> -->
+			<script src="lib/bwip-js/bwipp/upca.js"></script>
+			<script src="lib/bwip-js/bwipp/upce.js"></script>
+
         <script src="js/bootstrap.js"></script>
         <script src="js/app.js"></script>
 		<script src="js/constants.js"></script>
@@ -31,6 +65,7 @@
         <script src="js/directives.js"></script>
         <script src="js/factories.js"></script>
 		<script src="js/filters.js"></script>
+		<script src="js/libraries.js"></script>
 	</head>
 
 	<body ng-app="tagsApp">

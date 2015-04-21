@@ -4,13 +4,13 @@
 	</button>
 	<form ng-submit="onSuccess({ scanResponse: barcode })" ng-show="fruitlessScanAttempt">
 		<div class="list">
-			<label for="barcode-text" class="item item-input">
+			<label class="item item-input">
 				<span class="input-label">Enter Code</span>
-				<input type="text" id="barcode-text" name="barcode-text" ng-model="barcode.text" />
+				<input type="text" name="barcode-text" ng-model="barcode.text" />
 			</label>
-			<label for="barcode-format" class="item item-input">
+			<label class="item item-input">
 				<span class="input-label">Format</span>
-				<select id="barcode-format" name="barcode" ng-model="barcode.format">
+				<select name="barcode" ng-model="barcode.format">
 					<!-- @todo: ionic select with images -->
 				</select>
 			</label>

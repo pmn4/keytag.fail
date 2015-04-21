@@ -1,0 +1,14 @@
+<ion-view view-title="My Tags">
+	<ion-content padding="true">
+		<h3>App Settings</h3>
+		<div class="list">
+			<ion-toggle class="item" ng-model="settings.showHistory" toggle-class="toggle-calm">Display Usage History</ion-toggle>
+
+			<label class="item item-input item-select">
+				<div class="input-label">Tag Sort Order</div>
+				<select ng-model="settings.tagsSortOrder">
+				</select>
+			</label>
+		</div>
+	</ion-content>
+</ion-view>

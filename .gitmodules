@@ -1,3 +1,3 @@
-[submodule "lib/bwip-js"]
-	path = lib/bwip-js
+[submodule "www/lib/bwip-js"]
+	path = www/lib/bwip-js
 	url = git@github.com:metafloor/bwip-js.git

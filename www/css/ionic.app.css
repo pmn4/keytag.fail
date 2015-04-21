@@ -7608,3 +7608,29 @@ a.button {
 
 .slider {
   min-height: 100%; }
+
+.new-tag {
+  padding-top: 20vw; }
+
+.tag-barcode .barcode {
+  width: 100%;
+  image-rendering: pixelated; }
+
+.modal.key-tag {
+  padding-top: 25%;
+  background: black;
+  color: white; }
+  .modal.key-tag canvas.barcode {
+    border-width: 20px;
+    border-style: solid; }
+  .modal.key-tag .bar-footer {
+    border-top-width: 1px;
+    border-top-style: solid; }
+
+.bar-transparent {
+  background: transparent; }
+
+.badge.usage-success {
+  right: 64px; }
+.badge.usage-failure {
+  right: 32px; }
