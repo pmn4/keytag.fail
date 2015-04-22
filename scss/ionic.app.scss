@@ -1,3 +1,39 @@
+$light: #545454 !global; // grey
+$stable: #f8f8f8 !global;
+$assertive: #ff2d55 !global; // red
+$energized: #ff9601 !global; // orange
+$calm: #00c2fd !global;
+$positive: #18befb !global; // blue
+$balanced: #4cd865 !global; // green
+$royal: #5e5ddf !global; // purple
+$dark: white !global;
+
+$lighter: #4a4a4a !global; // darker grey
+
+$base-color: $dark;
+$base-background-color: $light;
+$input-color: mix($dark, $light, 100% * 15/16); // #111
+
+$menu-bg: $lighter;
+
+$item-divider-bg: $lighter;
+$item-divider-color: mix($light, $dark, 100% * 2/16); // #222
+$item-default-active-bg: mix($light, $dark, 100% * 233/256); // #D9D9D9 !default;
+
+$button-light-text: mix($light, $dark, 100% * 4/16); // #444
+$button-light-border: mix($light, $dark, 100% * 14/16); // #ddd
+$button-stable-border: mix($light, $dark, 100% * 194/256); // #b2b2b2
+$button-stable-active-bg: mix($light, $dark, 100% * 245/256); // #e5e5e5
+$button-stable-active-border: mix($light, $dark, 100% * 178/256); // #a2a2a2
+
+$toggle-off-border-color: mix($light, $dark, 100% * 246/256); // #e6e6e6
+$toggle-off-bg-color: $toggle-off-border-color; // mix($light, $dark, 100% * 16/16); // #fff
+$toggle-handle-off-bg-color: mix($light, $dark, 100% * 15/16); // #eee
+
+$popup-background-color: rgba($light, 0.9);
+
+$input-color-placeholder: mix($dark, $light, 40%); // lighten($dark, 40%)
+
 /*
 To customize the look and feel of Ionic, you can override the variables
 in ionic's _variables.scss file.
@@ -23,6 +59,55 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
 
+//
+// override ionic styles
+//
+.pane,
+.view {
+	background-image: url('/img/bg-pattern.svg');
+	background-repeat: repeat;
+}
+.item-complex .item-content,
+.item-radio .item-content {
+	background-color: $lighter;
+}
+.item {
+	p {
+		color: inherit;
+	}
+}
+.popup-head {
+	border-bottom-color: mix($light, $dark, 100% * 15/16); // #eee
+}
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"] {
+	background-color: transparent;
+}
+.slider-pager {
+	.slider-pager-page {
+		color: $dark;
+	}
+}
+//
+// end override ionic styles
+//
+
+
+
+
 // this feels a little dangerous, but you know... whatevs
 .scroll {
 	height: 100%;
@@ -39,7 +124,11 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 		image-rendering: pixelated;
 	}
 }
-
+.sub-item {
+	.item-content {
+		padding-left: 2 * $item-padding;
+	}
+}
 .modal.key-tag {
 	padding-top: 25%;
 	background: black; // no messing around with variables here
@@ -64,5 +153,37 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 	}
 	&.usage-failure {
 		right: $item-padding * 2; // as defined in _item.scss: .item .badge
+	}
+}
+.question {
+	img {
+		width: 90vw;
+		float: left;
+		margin-right: 5vw;
+	}
+
+	p {
+		font-size: $font-size-large;
+		line-height: 1.3;
+	}
+
+	a {
+		color: inherit;
+	}
+}
+.disclaimer {
+	font-style: italic;
+	color: mix($light, $dark, 50%);
+}
+.bar {
+	select {
+		display: block;
+		background: transparent;
+		border: none;
+		width: 95vw;
+		text-overflow: ellipsis;
+
+		@extend .h4;
+		@include appearance(none);
 	}
 }

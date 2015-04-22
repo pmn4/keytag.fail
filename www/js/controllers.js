@@ -116,6 +116,7 @@
 				$scope.$on("$ionicView.enter", function () {
 					$scope.trackView("TagList");
 				});
+				$scope.$on("$ionicView.enter", refresh);
 			}
 		])
 
@@ -155,7 +156,7 @@
 
 				$scope.deleteCurrentTag = function () {
 					TagsService.destroy($scope.currentTag.id)
-						.then(function () {
+						.then(function (tag) {
 							$scope.$broadcast(Events.DeleteTag, tag);
 						});
 				};
@@ -178,33 +179,35 @@
 						});
 				};
 
-				$scope.$watch("tags", function () {
-					var index = 0; // use $stateParams.tagId to derive index
+				function goToTag(tagId) {
+					var index = 0;
+					for (index; index < $scope.tags.length; index++) {
+						if (String($scope.tags[index].id) === tagId) {
+							break;
+						}
+					}
 
 					$scope.currentTag = currentTag(index);
+					$ionicSlideBoxDelegate.slide(index % $scope.tags.length);
+				}
 
-					// get index of active tag
-					$ionicSlideBoxDelegate.slide(index);
-
+				$scope.$watch("tags", function () {
+					$ionicSlideBoxDelegate.update();
 					$timeout(function () {
-						var index = 0;
 						$ionicSlideBoxDelegate.update();
-
-						for (index; index < $scope.tags.length; index++) {
-							if (String($scope.tags[index].id) === tagToDisplay) {
-								tagToDisplay = undefined; // just do it once
-								break;
-							}
+						if (tagToDisplay) {
+							goToTag(tagToDisplay);
 						}
-
-						$ionicSlideBoxDelegate.slide(index % $scope.tags.length);
-					});
+						tagToDisplay = undefined; // just do it once
+					}, 250); // I hate this so much, and I'm not even sure it works
 				});
 
 				refresh();
 
 				$scope.$on("$ionicView.enter", function () {
 					$scope.trackView("Tags");
+
+					goToTag($stateParams.tagId);
 				});
 			}
 		])
@@ -289,14 +292,15 @@
 			"$scope",
 			"$state",
 			"$ionicModal",
+			"$ionicPopup",
 			"TagsService",
-			function ($scope, $state, $ionicModal, TagsService) {
+			function ($scope, $state, $ionicModal, $ionicPopup, TagsService) {
 				$scope.tag = {};
 
 				$scope.manualSuccess = function (barcode) {
 					barcode.entryMethod = "manual";
 					$scope.tag.barcode = barcode;
-					$scope.createTag();
+					completeCreate();
 
 					$scope.showMessage("Tag Saved");
 					$scope.trackEvent("Tag", "Scan", barcode.entryMethod, 1);
@@ -304,7 +308,7 @@
 				$scope.scanSuccess = function (barcode) {
 					barcode.entryMethod = "scanner";
 					$scope.tag.barcode = barcode;
-					$scope.createTag();
+					completeCreate();
 
 					$scope.showMessage("Tag Saved");
 					$scope.trackEvent("Tag", "Scan", barcode.entryMethod, 1);
@@ -318,15 +322,41 @@
 					$scope.trackEvent("Tag", "Scan", "cancel", 1);
 				};
 
-				$scope.createTag = function () {
+				function completeCreate() {
+					$ionicPopup.show({
+						template: '<input type="text" ng-model="tag.issuer" placeholder="ex. Starbucks, A&amp;P">',
+						title: "Enter Issuer",
+						scope: $scope,
+						buttons: [
+							{
+								text: "Cancel",
+								onTap: cancelCreateTag
+							}, {
+								text: "Save",
+								type: "button-positive",
+								onTap: createTag
+							}
+						]
+					}).then(function () {
+						console.log("success", arguments);
+					}, function () {
+						console.log("failure", arguments);
+					});
+				}
+
+				function createTag() {
 					TagsService.save($scope.tag)
 						.then(function (tag) {
 							$scope.$emit(Events.CreateTag, tag);
-							$state.go("app.tag", { tagId: tag.id });
+							$state.go("app.tags", { tagId: $scope.tag.id }, { location: "replace" });
 						}, function (message) {
 							$scope.showError(message);
-							$scope.trackEvent("TagDetail Error: " + message);
+							$scope.trackEvent("TagCreate Error: " + message);
 						});
+				};
+
+				function cancelCreateTag() {
+					$scope.trackEvent("TagCreate Cancel");
 				};
 
 				$scope.$on("$ionicView.enter", function () {
@@ -356,6 +386,8 @@
 			"$scope",
 			"$stateParams",
 			function ($scope, $stateParams) {
+				$scope.q = $stateParams.q;
+
 				$scope.$on("$ionicView.enter", function () {
 					$scope.trackView("faq");
 				});

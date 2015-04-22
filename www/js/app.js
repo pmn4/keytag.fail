@@ -21,44 +21,25 @@
 				$ionicPlatform.ready(function () {
 					// Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
 					// for form inputs)
-					if (window.cordova && window.cordova.plugins.Keyboard) {
+					if (window.cordova && cordova.plugins.Keyboard) {
 						cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
 					}
 					if (window.StatusBar) {
-						// org.apache.cordova.statusbar required
 						StatusBar.styleDefault();
 					}
 
-					// if (window.AdMob) {
-						if (!$window.plugins) { $window.plugins = {}; }
-						if (!$window.plugins.AdMob) { $window.plugins.AdMob = window.AdMob; }
-						$window.plugins.AdMob.createBannerView = $window.plugins.AdMob.createBanner;
-						$window.plugins.AdMob.showAd = $window.plugins.AdMob.showBanner;
-
-						$cordovaGoogleAds.setOptions({
+					if (window.AdMob) {
+						$cordovaGoogleAds.createBanner({
+							adId: TagsApp.AdMobIds.footerBanner,
 							position: AdMob.AD_POSITION.BOTTOM_CENTER,
 							bgColor: "black",
 							autoShow: true
-						}).then(function () {
-							console.log("AdMob:setOptions Success.", arguments);
-
-							$cordovaGoogleAds.createBanner(TagsApp.AdMobIds.footerBanner)
-								.then(function () {
-									console.log("AdMob:createBannerView Success.", arguments);
-
-									$cordovaGoogleAds.showBanner()
-										.then(function () {
-											console.log("AdMob:showAd Success.", arguments);
-										}, function () {
-											console.log("AdMob:showAd Failure.", arguments);
-										});
-								}, function () {
-									console.log("AdMob:createBannerView Failure.", arguments);
-								});
-						}, function () {
-							console.log("AdMob:setOptions Failure.", arguments);
 						});
-					// }
+					}
+
+					if (window.navigator && navigator.splashscreen) {
+						navigator.splashscreen.hide();
+					}
 				});
 			}
 		])
@@ -114,6 +95,16 @@
 							"menuContent": {
 								templateUrl: "templates/key-tags.html",
 								controller: "TagsController"
+							}
+						}
+					})
+
+					.state("app.faq", {
+						url: "/faq?q",
+						views: {
+							"menuContent": {
+								templateUrl: "templates/faq.html",
+								controller: "FaqController"
 							}
 						}
 					})

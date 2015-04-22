@@ -1,5 +1,67 @@
 <ion-view view-title="Got Questions? Got Answers.">
-	<ion-content padding="true" class="new-tag" ng-controller="TagCreateController">
-		<key-tag-scanner on-success="manualSuccess(scanResponse)" on-scan-success="scanSuccess(scanResponse)" on-scan-error="scanError(error)" on-cancel="cancelCreation()"></key-tag-scanner>
+	<div class="bar bar-subheader">
+		<select ng-model="q">
+			<option>What's your Q?</option>
+			<option value="safe">I'm nervous. Is my data safe?</option>
+			<option value="wtf">Hey, what the hell? It didn't work.</option>
+		</select>
+	</div>
+	<ion-content padding="true">
+		<div class="question" ng-show="q === 'safe'">
+			<img src="/img/nervous.gif" />
+			<div class="answer">
+				<p>
+					Totally.
+				</p>
+				<p>
+					<strong class="assertive">
+						Your barcode data is stored on your phone only.
+					</strong>
+				</p>
+				<p>
+					This app does send some information to an analytics
+					service (Google Analytics), but the information is
+					limited to page views and a few events.  It is mostly
+					to let me (me:
+					<a href="twitter://user?screen_name=gcpmn">@gcpmn on
+					twitter</a>) know which issuers' barcode scanners I
+					need to work on next.
+				</p>
+				<p>
+					Feel free to use keytag.fail for your Starbucks or
+					LevelUp or any other payment barcode without fear
+					that the information is being sent to anyone.
+				</p>
+			</div>
+		</div>
+		<div class="question" ng-show="q === 'wtf'">
+			<img src="/img/wtf.gif" />
+			<div class="answer">
+				<p>
+					Yeah. That happens sometimes.
+				</p>
+				<p>
+					Barcode scanners work by shining small amounts of
+					light in an organized fashion onto whatever is being
+					scanned. Some light reflects off the white portions
+					of the barcode and is read by the scanner, while other
+					light is absorbed by the black parts and not read. This
+					produces a pattern that the barcode scanner recognizes.
+				</p>
+				<p class="disclaimer">
+					^^ total guess. Maybe that's how they work?
+					No one knows for sure.
+				</p>
+				<p>
+					With a phone, chances are good that all of the light is
+					reflected back to the scanner. No pattern? No success.
+				</p>
+				<p>
+					But it's cool, that's not the end of the road. I've got
+					ideas of how to beat the system.
+				</p>
+				<img src="/img/gob-magic.gif" />
+			</div>
+		</div>
 	</ion-content>
 </ion-view>

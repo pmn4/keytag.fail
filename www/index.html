@@ -29,6 +29,14 @@
 			Module.memoryInitializerPrefixURL = "lib/bwip-js/";
 		</script>
 
+		<script>
+			// Wait for Cordova to load
+			document.addEventListener("deviceready", function () {
+				if (!window.navigator || !navigator.splashscreen) { return; }
+				navigator.splashscreen.show();
+			}, false);
+		</script>
+
 		<script src="lib/bwip-js/freetype.js"></script>
 		<script src="lib/bwip-js/bwip.js"></script>
 			<script src="lib/bwip-js/lib/canvas.js"></script>

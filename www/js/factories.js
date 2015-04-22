@@ -159,6 +159,24 @@
 
 						return deferred.promise;
 					},
+					fetchByBarcodeText: function (barcodeText) {
+						var deferred = $q.defer();
+
+						this.list()
+							.then(function (tags) {
+								for (var i=0; i<tags.length; i++) {
+									if (tags[i] && tags[i].barcode && tags[i].barcode.text === barcodeText) {
+										deferred.resolve(tags[i]);
+										break;
+									}
+								}
+								deferred.reject();
+							}, function (e) {
+								deferred.reject(e);
+							});
+
+						return deferred.promise;
+					},
 					list: function () {
 						var deferred = $q.defer(), tags = [];
 

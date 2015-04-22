@@ -1,10 +1,8 @@
 todo:
-- promise w/gifs
-- ads
-- after save, goto tag
-- after save, prompt for issuer
-- splash screen
+- tag sort order
+?- splash screen
 - pull to refresh
+- auto start scanner on left menu link
 
 done:
 - local storage
@@ -17,6 +15,10 @@ done:
 - Did It Work? w/gifs (delay the modal hide) (kermit: yes, cookie monster: no)
 - settings page
 - showHistory toggle
+- ads
+- after save, goto tag
+- after save, prompt for issuer
+- promise w/gifs
 
 backlog:
 - send tag (to another device, to a family member, etc)

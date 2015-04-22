@@ -19,7 +19,8 @@
     "org.apache.cordova.console",
     "com.ionic.keyboard",
     "com.phonegap.plugins.barcodescanner",
-    "com.google.cordova.admob"
+    "com.google.cordova.admob",
+    "org.apache.cordova.splashscreen"
   ],
   "cordovaPlatforms": [
     "ios",

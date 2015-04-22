@@ -2,7 +2,7 @@
 	<ion-content padding="true">
 		<div class="list">
 			<a class="item" ng-repeat="tag in tags" ui-sref="app.tags({ tagId: tag.id })">
-				{{ tag.issuer }}
+				{{ tag.issuer || "unnamed" }}
 				<span class="badge badge-balanced usage-success">{{ tag | usageSuccess | length }}</span>
 				<span class="badge badge-energized usage-failure">{{ tag | usageFailure | length }}</span>
 			</a>
