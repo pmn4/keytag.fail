@@ -1,26 +1,6 @@
 ;(function (TagsApp, angular, undefined) {
 	"use strict";
 
-	var FORMAT_MAP = {
-		AZTEC: "azteccode",
-		CODABAR: "",
-		CODE_39: "code39",
-		CODE_93: "code93",
-		CODE_128: "code128",
-		DATA_MATRIX: "datamatrix",
-		EAN_8: "ean8",
-		EAN_13: "ean13",
-		ITF: "itf14",
-		MAXICODE: "msi", // maybe?
-		PDF_417: "pdf417",
-		QR_CODE: "qrcode",
-		RSS_14: "",
-		RSS_EXPANDED: "",
-		UPC_A: "upca",
-		UPC_E: "upce",
-		UPC_EAN_EXTENSION: ""
-	};
-
 	angular.module(TagsApp.name + ".directives", [])
 		.directive("keyTag", [
 			"AppConfig",
@@ -54,7 +34,8 @@
 		])
 		.directive("barcode", [
 			"BWIPJS",
-			function (BWIPJS) {
+			"BarCodeFormatMap",
+			function (BWIPJS, BarCodeFormatMap) {
 				return {
 					restrict: "E",
 					scope: {
@@ -70,7 +51,7 @@
 						$scope.$watch(attrs.tag, function (tag) {
 							var bw;
 
-							if (!tag || !tag.barcode || !(tag.barcode.format in FORMAT_MAP)) {
+							if (!tag || !tag.barcode || !(tag.barcode.format in BarCodeFormatMap)) {
 								return $scope.onError("Missing or unsupported barcode format");
 							}
 
@@ -81,7 +62,7 @@
 							bw.push(tag.barcode.text);
 							bw.push({});
 
-							bw.call(FORMAT_MAP[tag.barcode.format], function (e) {
+							bw.call(BarCodeFormatMap[tag.barcode.format], function (e) {
 								if (e) {
 									$scope.onError(e);
 								} else {
@@ -99,7 +80,8 @@
 			"$ionicPlatform",
 			"$cordovaBarcodeScanner",
 			"AppConfig",
-			function ($window, $ionicPlatform, $cordovaBarcodeScanner, AppConfig) {
+			"BarCodeFormatMap",
+			function ($window, $ionicPlatform, $cordovaBarcodeScanner, AppConfig, BarCodeFormatMap) {
 				return {
 					restrict: "E",
 					scope: {
@@ -112,6 +94,7 @@
 						$scope.barcode = {};
 						$scope.buttonLabel = $scope.buttonLabel || "Scan Key Tag";
 						$scope.fruitlessScanAttempt = false;
+						$scope.BarCodeFormatMap = BarCodeFormatMap;
 
 						$scope.openScanner = function () {
 							if (!$window.cordova) {

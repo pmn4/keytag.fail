@@ -2790,12 +2790,12 @@ cite {
 .text-center {
   text-align: center; }
 
-h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .bar select, .h5, .h6 {
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .bar select.full-width, .h5, .h6 {
   color: white;
   font-weight: 500;
   font-family: "Helvetica Neue", "Roboto", sans-serif;
   line-height: 1.2; }
-  h1 small, h2 small, h3 small, h4 small, h5 small, h6 small, .h1 small, .h2 small, .h3 small, .h4 small, .bar select small, .h5 small, .h6 small {
+  h1 small, h2 small, h3 small, h4 small, h5 small, h6 small, .h1 small, .h2 small, .h3 small, .h4 small, .bar select.full-width small, .h5 small, .h6 small {
     font-weight: normal;
     line-height: 1; }
 
@@ -2807,7 +2807,7 @@ h1, .h1, h2, .h2, h3, .h3 {
   h1 + h1, h1 + .h1, h1 + h2, h1 + .h2, h1 + h3, h1 + .h3, .h1 + h1, .h1 + .h1, .h1 + h2, .h1 + .h2, .h1 + h3, .h1 + .h3, h2 + h1, h2 + .h1, h2 + h2, h2 + .h2, h2 + h3, h2 + .h3, .h2 + h1, .h2 + .h1, .h2 + h2, .h2 + .h2, .h2 + h3, .h2 + .h3, h3 + h1, h3 + .h1, h3 + h2, h3 + .h2, h3 + h3, h3 + .h3, .h3 + h1, .h3 + .h1, .h3 + h2, .h3 + .h2, .h3 + h3, .h3 + .h3 {
     margin-top: 10px; }
 
-h4, .h4, .bar select, h5, .h5, h6, .h6 {
+h4, .h4, .bar select.full-width, h5, .h5, h6, .h6 {
   margin-top: 10px;
   margin-bottom: 10px; }
 
@@ -2820,7 +2820,7 @@ h2, .h2 {
 h3, .h3 {
   font-size: 24px; }
 
-h4, .h4, .bar select {
+h4, .h4, .bar select.full-width {
   font-size: 18px; }
 
 h5, .h5 {
@@ -2835,7 +2835,7 @@ h1 small, .h1 small {
 h2 small, .h2 small {
   font-size: 18px; }
 
-h3 small, .h3 small, h4 small, .h4 small, .bar select small {
+h3 small, .h3 small, h4 small, .h4 small, .bar select.full-width small {
   font-size: 14px; }
 
 dl {
@@ -7622,6 +7622,10 @@ textarea, input[type="text"], input[type="password"], input[type="datetime"], in
 .slider-pager .slider-pager-page {
   color: white; }
 
+.item-select select {
+  color: inherit;
+  text-align: left; }
+
 .scroll {
   height: 100%; }
 
@@ -7671,7 +7675,7 @@ textarea, input[type="text"], input[type="password"], input[type="datetime"], in
   font-style: italic;
   color: darkgray; }
 
-.bar select {
+.bar select.full-width {
   display: block;
   background: transparent;
   border: none;
@@ -7680,3 +7684,5 @@ textarea, input[type="text"], input[type="password"], input[type="datetime"], in
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none; }
+.bar .item-input {
+  margin-top: -2px; }

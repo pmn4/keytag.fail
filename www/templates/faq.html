@@ -1,12 +1,12 @@
 <ion-view view-title="Got Questions? Got Answers.">
-	<div class="bar bar-subheader">
-		<select ng-model="q">
+	<ion-header-bar class="bar bar-subheader">
+		<select ng-model="q" class="full-width">
 			<option>What's your Q?</option>
 			<option value="safe">I'm nervous. Is my data safe?</option>
 			<option value="wtf">Hey, what the hell? It didn't work.</option>
 		</select>
-	</div>
-	<ion-content padding="true">
+	</ion-header-bar>
+	<ion-content padding="true" has-header="true" has-subheader="true">
 		<div class="question" ng-show="q === 'safe'">
 			<img src="/img/nervous.gif" />
 			<div class="answer">

@@ -101,6 +101,12 @@ input[type="color"] {
 		color: $dark;
 	}
 }
+.item-select {
+	select {
+		color: inherit;
+		text-align: left; // seems odd that I would have to do this
+	}
+}
 //
 // end override ionic styles
 //
@@ -176,7 +182,7 @@ input[type="color"] {
 	color: mix($light, $dark, 50%);
 }
 .bar {
-	select {
+	select.full-width {
 		display: block;
 		background: transparent;
 		border: none;
@@ -185,5 +191,9 @@ input[type="color"] {
 
 		@extend .h4;
 		@include appearance(none);
+	}
+	.item-input {
+		// to avoid some `overflow: hidden;` clipping
+		margin-top: -2px;
 	}
 }

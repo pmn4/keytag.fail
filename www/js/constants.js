@@ -18,5 +18,34 @@
 			webApp: !window.cordova,
 			nativeApp: !!window.cordova
 		})
+		.constant("BarCodeFormatMap", {
+			AZTEC: "azteccode",
+			CODABAR: "",
+			CODE_39: "code39",
+			CODE_93: "code93",
+			CODE_128: "code128",
+			DATA_MATRIX: "datamatrix",
+			EAN_8: "ean8",
+			EAN_13: "ean13",
+			ITF: "itf14",
+			MAXICODE: "msi", // maybe?
+			PDF_417: "pdf417",
+			QR_CODE: "qrcode",
+			RSS_14: "",
+			RSS_EXPANDED: "",
+			UPC_A: "upca",
+			UPC_E: "upce",
+			UPC_EAN_EXTENSION: ""
+		})
+		.constant("OrderByOptions", {
+			byName: "Alphabetical",
+			mostRecent: "Most Recently Created",
+			mostRecentUse: "Most Recently Used",
+			mostRecentSuccess: "Most Recent Success",
+			mostRecentFailure: "Most Recent Failure",
+			mostUsed: "Most Used",
+			mostSuccessful: "Most Successful",
+			mostFailed: "Least Successful"
+		})
 	;
 })(window.TagsApp, window.angular, window.location);

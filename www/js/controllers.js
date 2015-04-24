@@ -12,12 +12,13 @@
 
 	angular.module(TagsApp.name + ".controllers", [])
 		.controller("AppController", [
+			"$rootScope",
 			"$scope",
 			"$cordovaGoogleAnalytics",
 			"$cordovaToast",
 			"AppConfig",
 			"SettingsService",
-			function ($scope, $cordovaGoogleAnalytics, $cordovaToast, AppConfig, SettingsService) {
+			function ($rootScope, $scope, $cordovaGoogleAnalytics, $cordovaToast, AppConfig, SettingsService) {
 				if (window.analytics) {
 					$cordovaGoogleAnalytics.startTrackerWithId(AppConfig.gaTrackingId);
 				}
@@ -75,10 +76,10 @@
 				function fetchSettings() {
 					SettingsService.list()
 						.then(function (settings) {
-							$scope.settings = settings;
+							$rootScope.settings = settings;
 						});
 				}
-				$scope.$on(Events.UpdatedSettings, fetchSettings);
+				$rootScope.$on(Events.UpdatedSettings, fetchSettings);
 				fetchSettings();
 
 				// iterate over all settings?
@@ -86,17 +87,26 @@
 				$scope.$watch("settings.showHistory", function (val) {
 					SettingsService.setShowHistory(val)
 						.then(function () {
-							$scope.$emit(Events.UpdatedSettings);
+							$rootScope.$broadcast(Events.UpdatedSettings);
+						});
+				});
+				$scope.$watch("settings.sortOrder", function (val) {
+					SettingsService.setSortOrder(val)
+						.then(function () {
+							$rootScope.$broadcast(Events.UpdatedSettings);
 						});
 				});
 			}
 		])
 
 		.controller("TagListController", [
+			"$rootScope",
 			"$scope",
 			"TagsService",
-			function ($scope, TagsService) {
+			"OrderByOptions",
+			function ($rootScope, $scope, TagsService, OrderByOptions) {
 				$scope.tags = [];
+				$scope.orderByOptions = OrderByOptions;
 
 				function refresh() {
 					TagsService.list()
@@ -107,9 +117,9 @@
 							$scope.trackEvent("TagList Error: " + message);
 						});
 				}
-				$scope.$on(Events.CreateTag, refresh);
-				$scope.$on(Events.DeleteTag, refresh);
-				$scope.$on(Events.UpdateTag, refresh);
+				$rootScope.$on(Events.CreateTag, refresh);
+				$rootScope.$on(Events.DeleteTag, refresh);
+				$rootScope.$on(Events.UpdateTag, refresh);
 
 				refresh();
 
@@ -121,14 +131,15 @@
 		])
 
 		.controller("TagsController", [
+			"$rootScope",
 			"$scope",
+			"$filter",
 			"$timeout",
 			"$stateParams",
 			"$ionicModal",
 			"$ionicSlideBoxDelegate",
-			"SettingsService",
 			"TagsService",
-			function ($scope, $timeout, $stateParams, $ionicModal, $ionicSlideBoxDelegate, SettingsService, TagsService) {
+			function ($rootScope, $scope, $filter, $timeout, $stateParams, $ionicModal, $ionicSlideBoxDelegate, TagsService) {
 				var tagToDisplay = $stateParams.tagId;
 				$scope.tags = [];
 
@@ -141,30 +152,39 @@
 					return $scope.tags[index];
 				}
 
+				function setTags(tags) {
+					if (!tags) { tags = $scope.tags; }
+
+					$scope.tags = $filter("tagSort")(tags, $scope.settings.sortOrder);
+				}
+				$rootScope.$watch("settings.sortOrder", function () {
+					setTags();
+				});
+
 				function refresh() {
 					TagsService.list()
 						.then(function (tags) {
-							$scope.tags = tags;
+							setTags(tags);
 						}, function (message) {
 							$scope.showError(message);
 							$scope.trackEvent("TagList Error: " + message);
 						});
 				}
-				$scope.$on(Events.CreateTag, refresh);
-				$scope.$on(Events.DeleteTag, refresh);
-				$scope.$on(Events.UpdateTag, refresh);
+				$rootScope.$on(Events.CreateTag, refresh);
+				$rootScope.$on(Events.DeleteTag, refresh);
+				$rootScope.$on(Events.UpdateTag, refresh);
 
 				$scope.deleteCurrentTag = function () {
 					TagsService.destroy($scope.currentTag.id)
 						.then(function (tag) {
-							$scope.$broadcast(Events.DeleteTag, tag);
+							$rootScope.$broadcast(Events.DeleteTag, tag);
 						});
 				};
 				$scope.currentTagFailure = function () {
-					$scope.$broadcast(Events.ScanFailure, $scope.currentTag.id);
+					$rootScope.$broadcast(Events.ScanFailure, $scope.currentTag.id);
 				};
 				$scope.currentTagSuccess = function () {
-					$scope.$broadcast(Events.ScanSuccess, $scope.currentTag.id);
+					$rootScope.$broadcast(Events.ScanSuccess, $scope.currentTag.id);
 				};
 				$scope.setDisplayedTagIndex = function (index) {
 					$scope.currentTag = currentTag(index);
@@ -175,7 +195,7 @@
 				$scope.save = function (tag) {
 					TagsService.save(tag)
 						.then(function (tag) {
-							$scope.$emit(Events.UpdateTag, tag);
+							$rootScope.$broadcast(Events.UpdateTag, tag);
 						});
 				};
 
@@ -213,13 +233,14 @@
 		])
 
 		.controller("TagDetailController", [
+			"$rootScope",
 			"$scope",
 			"$timeout",
 			"$stateParams",
 			"$ionicModal",
 			"AppConfig",
 			"TagsService",
-			function ($scope, $timeout, $stateParams, $ionicModal, AppConfig, TagsService) {
+			function ($rootScope, $scope, $timeout, $stateParams, $ionicModal, AppConfig, TagsService) {
 				$scope.hasUsed = false;
 				$scope.init = function (tag) {
 					$scope.tag = tag;
@@ -245,7 +266,7 @@
 						$scope.success = undefined;
 					}, 2500);
 				};
-				$scope.$on(Events.ScanSuccess, function (_event, tagId) {
+				$rootScope.$on(Events.ScanSuccess, function (_event, tagId) {
 					if ($scope.tag.id !== tagId) { return; }
 
 					$scope.scanSuccess();
@@ -263,7 +284,7 @@
 						$scope.success = undefined;
 					}, 2500);
 				};
-				$scope.$on(Events.ScanFailure, function (_event, tagId) {
+				$rootScope.$on(Events.ScanFailure, function (_event, tagId) {
 					if ($scope.tag.id !== tagId) { return; }
 
 					$scope.scanFailure();
@@ -273,7 +294,7 @@
 					$scope.showMessage("Tag Saved");
 					TagsService.save($scope.tag)
 						.then(function (tag) {
-							$scope.$emit(Events.UpdateTag, tag);
+							$rootScope.$broadcast(Events.UpdateTag, tag);
 						});
 				};
 
@@ -289,12 +310,13 @@
 		])
 
 		.controller("TagCreateController", [
+			"$rootScope",
 			"$scope",
 			"$state",
 			"$ionicModal",
 			"$ionicPopup",
 			"TagsService",
-			function ($scope, $state, $ionicModal, $ionicPopup, TagsService) {
+			function ($rootScope, $scope, $state, $ionicModal, $ionicPopup, TagsService) {
 				$scope.tag = {};
 
 				$scope.manualSuccess = function (barcode) {
@@ -347,7 +369,7 @@
 				function createTag() {
 					TagsService.save($scope.tag)
 						.then(function (tag) {
-							$scope.$emit(Events.CreateTag, tag);
+							$rootScope.$broadcast(Events.CreateTag, tag);
 							$state.go("app.tags", { tagId: $scope.tag.id }, { location: "replace" });
 						}, function (message) {
 							$scope.showError(message);
@@ -366,15 +388,22 @@
 		])
 
 		.controller("SettingsListController", [
+			"$rootScope",
 			"$scope",
 			"SettingsService",
-			function ($scope, SettingsService) {
-				$scope.settings = [];
+			"OrderByOptions",
+			function ($rootScope, $scope, SettingsService, OrderByOptions) {
+				$scope.orderByOptions = OrderByOptions;
 
-				SettingsService.list()
-					.then(function (settings) {
-						$scope.settings = settings;
-					});
+				function refresh() {
+					SettingsService.list()
+						.then(function (settings) {
+							$rootScope.settings = settings;
+						});
+				}
+				refresh();
+
+				$rootScope.$on(Events.UpdatedSettings, refresh);
 
 				$scope.$on("$ionicView.enter", function () {
 					$scope.trackView("settings");

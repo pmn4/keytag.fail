@@ -10,7 +10,7 @@
 			</label>
 			<label class="item item-input">
 				<span class="input-label">Format</span>
-				<select name="barcode" ng-model="barcode.format">
+				<select name="barcode" ng-model="barcode.format" ng-options="k for (k, v) in BarCodeFormatMap">
 					<!-- @todo: ionic select with images -->
 				</select>
 			</label>

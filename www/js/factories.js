@@ -25,6 +25,7 @@
 		this.issuer = attributes.issuer;
 		this.description = attributes.description;
 		this.barcode = new Barcode(attributes.barcode);
+		this.createdAt = new Date(Date.parse(attributes.createdAt) || Date.now());
 
 		this.usage = [];
 		angular.forEach(attributes.usage, function (u) {
@@ -48,12 +49,15 @@
 		.factory("SettingsService", [
 			"$q",
 			"localStorageService",
-			function ($q, localStorageService) {
+			"OrderByOptions",
+			function ($q, localStorageService, OrderByOptions) {
 				var KEY_PREFIX = "settings.", defaults;
 
 				defaults = {
 					showHistory: true,
-					sortOrder: "name"
+					sortOrder: (function (options) {
+						for (var first in options) { return first; }
+					})(OrderByOptions)
 				};
 
 				function _key(id) {
@@ -119,6 +123,12 @@
 					},
 					setShowHistory: function (val) {
 						return this.save("showHistory", val);
+					},
+					getSortOrder: function () {
+						return this.fetch("sortOrder");
+					},
+					setSortOrder: function (val) {
+						return this.save("sortOrder", val);
 					}
 				};
 			}
