@@ -1,4 +1,4 @@
-;(function (TagsApp, angular, undefined) {
+;(function (TagsApp, angular, _, undefined) {
 	"use strict";
 
 	function Barcode(attributes) {
@@ -45,6 +45,86 @@
 		}));
 	};
 
+	/// sorting algorithms
+	Tag.prototype.mostRecentSort = function () {
+		return -1 * this.createdAt;
+	};
+	Tag.prototype.mostRecentUseSort = function () {
+		var mostRecent;
+
+		if (!this.usage || !this.usage.length) { return Infinity; }
+
+		mostRecent = _.chain(this.usage)
+			.max(function (use) { return use.timestamp; })
+			.value();
+
+		return mostRecent ? -1 * mostRecent.timestamp : Infinity;
+	};
+	Tag.prototype.mostRecentSuccessSort = function () {
+		var mostRecent;
+
+		if (!this.usage || !this.usage.length) { return Infinity; }
+
+		mostRecent = _.chain(this.usage)
+			.filter(function (use) { return use.success; })
+			.max(function (use) { return use.timestamp; })
+			.value();
+
+		return mostRecent ? -1 * mostRecent.timestamp : Infinity;
+	};
+	Tag.prototype.mostRecentFailureSort = function () {
+		var mostRecent;
+
+		if (!this.usage || !this.usage.length) { return Infinity; }
+
+		mostRecent = _.chain(this.usage)
+			.filter(function (use) { return !use.success; })
+			.max(function (use) { return use.timestamp; })
+			.value();
+
+		return mostRecent ? -1 * mostRecent.timestamp : Infinity;
+	};
+	Tag.prototype.mostUsedSort = function () {
+		if (!this.usage) { return Infinity; }
+
+		return -1 * this.usage.length;
+	};
+	Tag.prototype.mostSuccessfulSort = function () {
+		if (!this.usage || !this.usage.length) { return Infinity; }
+
+		return -1 * _.chain(this.usage)
+			.filter(function (use) { return use.success; })
+			.size()
+			.value();
+	};
+	Tag.prototype.mostFailedSort = function () {
+		if (!this.usage || !this.usage.length) { return Infinity; }
+
+		return -1 * _.chain(this.usage)
+			.filter(function (use) { return !use.success; })
+			.size()
+			.value();
+	};
+	Tag.prototype.nameSort = function () {
+		return this.issuer;
+	};
+	/// sorting algorithms
+
+	function TagSort(tags) {
+		this.tags = tags;
+	}
+
+	TagSort.prototype.sort = function (sortOrder) {
+		return _.sortBy(this.tags, function (tag) {
+			var fnSort = sortOrder + "Sort";
+
+			if (!tag) { return undefined; }
+
+			return fnSort in tag ? tag[fnSort]() : tag.nameSort();
+		});
+	};
+
+
 	angular.module(TagsApp.name + ".factories", [])
 		.factory("SettingsService", [
 			"$q",
@@ -90,7 +170,7 @@
 
 						return deferred.promise;
 					},
-					list: function () {
+					list: function (sortOrder) {
 						var deferred = $q.defer(), settings = {};
 
 						try {
@@ -137,7 +217,7 @@
 			"$q",
 			"localStorageService",
 			function ($q, localStorageService) {
-				var KEY_PREFIX = "tag.";
+				var KEY_PREFIX = "tag.", lastUpdated, cache = {};
 
 				function _key(id) {
 					return KEY_PREFIX + id;
@@ -187,8 +267,13 @@
 
 						return deferred.promise;
 					},
-					list: function () {
+					list: function (sortOrder) {
 						var deferred = $q.defer(), tags = [];
+
+						if (cache.lastUpdated === lastUpdated && cache.data) {
+							deferred.resolve(new TagSort(cache.data).sort(sortOrder));
+							return deferred.promise;
+						}
 
 						try {
 							angular.forEach(localStorageService.keys(), function (key) {
@@ -197,7 +282,11 @@
 								tags.push(_get(key));
 							}, this);
 
-							deferred.resolve(tags);
+							cache = {
+								lastUpdated: lastUpdated,
+								data: tags
+							}
+							deferred.resolve(new TagSort(cache.data).sort(sortOrder));
 						} catch (e) {
 							deferred.reject(e);
 						}
@@ -210,6 +299,8 @@
 						if (!tagObj) {
 							return $q.reject("Nothing to save.");
 						}
+
+						lastUpdated = new Date();
 
 						if (!tagObj.id) {
 							tagObj.id = this.newId();
@@ -229,6 +320,8 @@
 					destroy: function (id) {
 						var deferred = $q.defer();
 
+						lastUpdated = new Date();
+
 						try {
 							_remove(_key(id));
 
@@ -243,4 +336,4 @@
 			}
 		])
 	;
-})(window.TagsApp, window.angular);
+})(window.TagsApp, window.angular, window._);

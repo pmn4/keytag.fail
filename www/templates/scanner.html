@@ -8,9 +8,9 @@
 				<span class="input-label">Enter Code</span>
 				<input type="text" name="barcode-text" ng-model="barcode.text" />
 			</label>
-			<label class="item item-input">
+			<label class="item item-input item-select">
 				<span class="input-label">Format</span>
-				<select name="barcode" ng-model="barcode.format" ng-options="k for (k, v) in BarCodeFormatMap">
+				<select name="barcode" ng-model="barcode.format" ng-options="k as k for k in BarCodeFormats">
 					<!-- @todo: ionic select with images -->
 				</select>
 			</label>

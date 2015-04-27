@@ -73,6 +73,11 @@
 					$cordovaGoogleAnalytics.trackView(trackView);
 				};
 
+				// initialize
+				$rootScope.settings = {
+					showHistory: true,
+					sortOrder: "byName"
+				};
 				function fetchSettings() {
 					SettingsService.list()
 						.then(function (settings) {
@@ -109,7 +114,7 @@
 				$scope.orderByOptions = OrderByOptions;
 
 				function refresh() {
-					TagsService.list()
+					TagsService.list($scope.settings.sortOrder)
 						.then(function (tags) {
 							$scope.tags = tags;
 						}, function (message) {
@@ -117,9 +122,11 @@
 							$scope.trackEvent("TagList Error: " + message);
 						});
 				}
-				$rootScope.$on(Events.CreateTag, refresh);
-				$rootScope.$on(Events.DeleteTag, refresh);
-				$rootScope.$on(Events.UpdateTag, refresh);
+				// if we refresh on each page load, I think these are unnecessary
+				// $rootScope.$on(Events.CreateTag, refresh);
+				// $rootScope.$on(Events.DeleteTag, refresh);
+				// $rootScope.$on(Events.UpdateTag, refresh);
+				$scope.$watch("settings.sortOrder", refresh);
 
 				refresh();
 
@@ -130,121 +137,42 @@
 			}
 		])
 
-		.controller("TagsController", [
-			"$rootScope",
+		.controller("TagNavigationController", [
 			"$scope",
-			"$filter",
-			"$timeout",
-			"$stateParams",
-			"$ionicModal",
-			"$ionicSlideBoxDelegate",
+			"$state",
 			"TagsService",
-			function ($rootScope, $scope, $filter, $timeout, $stateParams, $ionicModal, $ionicSlideBoxDelegate, TagsService) {
-				var tagToDisplay = $stateParams.tagId;
-				$scope.tags = [];
-
-				function currentTag(index) {
-					if (!$scope.tags || $scope.tags.length < index) {
-						// log this error
-						return;
-					}
-
-					return $scope.tags[index];
-				}
-
-				function setTags(tags) {
-					if (!tags) { tags = $scope.tags; }
-
-					$scope.tags = $filter("tagSort")(tags, $scope.settings.sortOrder);
-				}
-				$rootScope.$watch("settings.sortOrder", function () {
-					setTags();
-				});
-
-				function refresh() {
-					TagsService.list()
+			function ($scope, $state, TagsService) {
+				function goToTag(anchorTag, offset) {
+					TagsService.list($scope.settings.sortOrder)
 						.then(function (tags) {
-							setTags(tags);
+							var tagIndex = _.chain(tags)
+								.pluck("id")
+								.indexOf(anchorTag.id)
+								.value();
+
+							if (tagIndex === -1) { return; }
+
+							$scope.go("app.tag-detail", {
+								tagId: tags[tagIndex + offset % tags.length]
+							});
 						}, function (message) {
-							$scope.showError(message);
-							$scope.trackEvent("TagList Error: " + message);
+							$scope.trackEvent("TagNavigation Error: " + message);
 						});
 				}
-				$rootScope.$on(Events.CreateTag, refresh);
-				$rootScope.$on(Events.DeleteTag, refresh);
-				$rootScope.$on(Events.UpdateTag, refresh);
-
-				$scope.deleteCurrentTag = function () {
-					TagsService.destroy($scope.currentTag.id)
-						.then(function (tag) {
-							$rootScope.$broadcast(Events.DeleteTag, tag);
-						});
-				};
-				$scope.currentTagFailure = function () {
-					$rootScope.$broadcast(Events.ScanFailure, $scope.currentTag.id);
-				};
-				$scope.currentTagSuccess = function () {
-					$rootScope.$broadcast(Events.ScanSuccess, $scope.currentTag.id);
-				};
-				$scope.setDisplayedTagIndex = function (index) {
-					$scope.currentTag = currentTag(index);
-
-					$scope.trackView("TagDetail", $scope.currentTag);
-				};
-
-				$scope.save = function (tag) {
-					TagsService.save(tag)
-						.then(function (tag) {
-							$rootScope.$broadcast(Events.UpdateTag, tag);
-						});
-				};
-
-				function goToTag(tagId) {
-					var index = 0;
-					for (index; index < $scope.tags.length; index++) {
-						if (String($scope.tags[index].id) === tagId) {
-							break;
-						}
-					}
-
-					$scope.currentTag = currentTag(index);
-					$ionicSlideBoxDelegate.slide(index % $scope.tags.length);
-				}
-
-				$scope.$watch("tags", function () {
-					$ionicSlideBoxDelegate.update();
-					$timeout(function () {
-						$ionicSlideBoxDelegate.update();
-						if (tagToDisplay) {
-							goToTag(tagToDisplay);
-						}
-						tagToDisplay = undefined; // just do it once
-					}, 250); // I hate this so much, and I'm not even sure it works
-				});
-
-				refresh();
-
-				$scope.$on("$ionicView.enter", function () {
-					$scope.trackView("Tags");
-
-					goToTag($stateParams.tagId);
-				});
 			}
 		])
 
 		.controller("TagDetailController", [
 			"$rootScope",
 			"$scope",
+			"$state",
 			"$timeout",
 			"$stateParams",
 			"$ionicModal",
 			"AppConfig",
 			"TagsService",
-			function ($rootScope, $scope, $timeout, $stateParams, $ionicModal, AppConfig, TagsService) {
+			function ($rootScope, $scope, $state, $timeout, $stateParams, $ionicModal, AppConfig, TagsService) {
 				$scope.hasUsed = false;
-				$scope.init = function (tag) {
-					$scope.tag = tag;
-				};
 
 				$scope.displayTag = function (tagId) {
 					$scope.tagModal.show();
@@ -266,13 +194,13 @@
 						$scope.success = undefined;
 					}, 2500);
 				};
-				$rootScope.$on(Events.ScanSuccess, function (_event, tagId) {
-					if ($scope.tag.id !== tagId) { return; }
+				// $rootScope.$on(Events.ScanSuccess, function (_event, tagId) {
+				// 	if ($scope.tag.id !== tagId) { return; }
 
-					$scope.scanSuccess();
-				});
+				// 	$scope.scanSuccess();
+				// });
 
-				$scope.scanFailure = function (tagId) {
+				$scope.scanFailure = function () {
 					$scope.trackEvent("Tag", "Use", $scope.tag.issuer, 0);
 
 					$scope.tag.failure();
@@ -284,17 +212,29 @@
 						$scope.success = undefined;
 					}, 2500);
 				};
-				$rootScope.$on(Events.ScanFailure, function (_event, tagId) {
-					if ($scope.tag.id !== tagId) { return; }
+				// $rootScope.$on(Events.ScanFailure, function (_event, tagId) {
+				// 	if ($scope.tag.id !== tagId) { return; }
 
-					$scope.scanFailure();
-				});
+				// 	$scope.scanFailure();
+				// });
 
-				$scope.save = function () {
-					$scope.showMessage("Tag Saved");
+				$scope.save = function (notify) {
+					if (notify) {
+						$scope.showMessage("Tag Saved");
+					}
+
 					TagsService.save($scope.tag)
 						.then(function (tag) {
 							$rootScope.$broadcast(Events.UpdateTag, tag);
+						});
+				};
+
+				$scope.delete = function () {
+					// @todo: prompt
+					TagsService.destroy($scope.tag.id)
+						.then(function (tag) {
+							$rootScope.$broadcast(Events.DeleteTag, tag);
+							$state.go("app.tag-list")
 						});
 				};
 
@@ -306,6 +246,11 @@
 					animation: "slide-in-up",
 					focusFirstInput: true
 				});
+
+				TagsService.fetch($stateParams.tagId)
+					.then(function (tag) {
+						$scope.tag = tag;
+					});
 			}
 		])
 
@@ -370,7 +315,7 @@
 					TagsService.save($scope.tag)
 						.then(function (tag) {
 							$rootScope.$broadcast(Events.CreateTag, tag);
-							$state.go("app.tags", { tagId: $scope.tag.id }, { location: "replace" });
+							$state.go("app.tag-detail", { tagId: $scope.tag.id }, { location: "replace" });
 						}, function (message) {
 							$scope.showError(message);
 							$scope.trackEvent("TagCreate Error: " + message);
@@ -383,6 +328,10 @@
 
 				$scope.$on("$ionicView.enter", function () {
 					$scope.trackView("NewTag");
+				});
+
+				$rootScope.$on(Events.CreateTag, function () {
+					$scope.tag = {};
 				});
 			}
 		])

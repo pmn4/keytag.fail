@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
 output = 'www/lib/lodash/lodash.custom.min.js'
-methods = %w(chain filter max memoize size sortBy value)
+methods = %w(chain filter max memoize pluck size sortBy value)
 
 `lodash modern include=#{ methods.join(',') } --production --output #{ output }`

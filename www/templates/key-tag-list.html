@@ -8,7 +8,7 @@
 	</ion-header-bar>
 	<ion-content padding="true" has-header="true" has-subheader="true">
 		<div class="list">
-			<a class="item" ng-repeat="tag in tags | tagSort : settings.sortOrder" ui-sref="app.tags({ tagId: tag.id })">
+			<a class="item" ng-repeat="tag in tags" ui-sref="app.tag-detail({ tagId: tag.id })">
 				{{ tag.issuer || "unnamed" }}
 				<span class="badge badge-balanced usage-success">{{ tag | usageSuccess | length }}</span>
 				<span class="badge badge-energized usage-failure">{{ tag | usageFailure | length }}</span>

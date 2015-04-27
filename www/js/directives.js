@@ -94,7 +94,9 @@
 						$scope.barcode = {};
 						$scope.buttonLabel = $scope.buttonLabel || "Scan Key Tag";
 						$scope.fruitlessScanAttempt = false;
-						$scope.BarCodeFormatMap = BarCodeFormatMap;
+						$scope.BarCodeFormats = Object.keys(BarCodeFormatMap);
+
+						$scope.$watch("barcode.format", function () { console.log("format: ", arguments); });
 
 						$scope.openScanner = function () {
 							if (!$window.cordova) {

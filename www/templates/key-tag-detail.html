@@ -1,0 +1,24 @@
+<ion-view view-title="{{ tag.issuer }}">
+	<ion-nav-bar>
+		<ion-nav-back-button></ion-nav-back-button>
+	</ion-nav-bar>
+	<ion-nav-buttons side="left">
+		<button class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
+	</ion-nav-buttons>
+	<ion-nav-buttons side="right">
+		<!-- @todo: edit button -->
+		<button class="button button-icon button-clear button-assertive icon ion-ios-close" ng-click="delete()"></button>
+		<button class="button button-icon button-clear button-energized icon ion-android-alert" ng-click="scanFailure()"></button>
+		<button class="button button-icon button-clear button-balanced icon ion-ios-checkmark" ng-click="scanSuccess()"></button>
+		<!-- <button class="button button-icon icon ion-android-more-vertical" ng-click="toggleTagMenu()"></button> -->
+	</ion-nav-buttons>
+	<ion-content padding="true">
+		<div ng-controller="TagNavigationController" on-swipe-left="goToTag(tag, 1)" on-swipe-right="goToTag(tag, -1)">
+			<key-tag tag="tag" on-change="save(tag)"></key-tag>
+			<button class="button button-block button-positive" ng-click="displayTag()">
+				Use this Key Tag
+			</button>
+			<key-tag-history tag="tag" show-history="settings.showHistory" on-toggle-history="toggleHistory()"></key-tag-history>
+		</div>
+	</ion-content>
+</ion-view>

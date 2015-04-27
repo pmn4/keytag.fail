@@ -38,7 +38,7 @@
 			UPC_EAN_EXTENSION: ""
 		})
 		.constant("OrderByOptions", {
-			byName: "Alphabetical",
+			name: "Alphabetical",
 			mostRecent: "Most Recently Created",
 			mostRecentUse: "Most Recently Used",
 			mostRecentSuccess: "Most Recent Success",

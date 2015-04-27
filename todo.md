@@ -1,8 +1,9 @@
 todo:
-- tag sort order
-?- splash screen
-- pull to refresh
-- auto start scanner on left menu link
+-
+
+bugs:
+- displaying barcodes
+- tag sort order (might be a data issue?)
 
 done:
 - local storage
@@ -19,6 +20,7 @@ done:
 - after save, goto tag
 - after save, prompt for issuer
 - promise w/gifs
+- tag sort order
 
 backlog:
 - send tag (to another device, to a family member, etc)
@@ -26,3 +28,6 @@ backlog:
 - load from screenshot
 - add photo of tag
 - proximity control
+?- splash screen
+- pull to refresh
+- auto start scanner on left menu link

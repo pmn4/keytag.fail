@@ -89,12 +89,12 @@
 						}
 					})
 
-					.state("app.tags", {
+					.state("app.tag-detail", {
 						url: "/tags/:tagId",
 						views: {
 							"menuContent": {
-								templateUrl: "templates/key-tags.html",
-								controller: "TagsController"
+								templateUrl: "templates/key-tag-detail.html",
+								controller: "TagDetailController"
 							}
 						}
 					})
