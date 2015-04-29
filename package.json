@@ -18,10 +18,7 @@
     "org.apache.cordova.device",
     "org.apache.cordova.console",
     "com.ionic.keyboard",
-    "com.phonegap.plugins.barcodescanner",
-    "com.google.cordova.admob",
-    "org.apache.cordova.splashscreen",
-    "org.apache.cordova.file"
+    "com.danielcwilson.plugins.googleanalytics"
   ],
   "cordovaPlatforms": [
     "ios",
