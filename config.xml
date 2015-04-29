@@ -15,19 +15,17 @@
   <preference name="BackupWebStorage" value="none"/>
   <preference name="SplashScreen" value="screen"/>
   <preference name="SplashScreenDelay" value="3000"/>
+  <preference name="ShowSplashScreenSpinner" value="true"/>
+  <preference name="AutoHideSplashScreen" value="false"/>
+  <preference name="FadeSplashScreen" value="false"/>
   <feature name="StatusBar">
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
   </feature>
-
   <feature name="SplashScreen">
-      <param name="ios-package" value="CDVSplashScreen"/>
-      <param name="android-package" value="org.apache.cordova.splashscreen.SplashScreen"/>
-      <param name="onload" value="true"/>
+    <param name="ios-package" value="CDVSplashScreen"/>
+    <param name="android-package" value="org.apache.cordova.splashscreen.SplashScreen"/>
+    <param name="onload" value="true"/>
   </feature>
-  <preference name="ShowSplashScreenSpinner" value="true" />
-  <preference name="AutoHideSplashScreen" value="false" />
-  <preference name="FadeSplashScreen" value="false" />
-
   <platform name="ios">
     <icon src="resources/ios/icon/icon.png" width="57" height="57"/>
     <icon src="resources/ios/icon/icon@2x.png" width="114" height="114"/>

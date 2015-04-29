@@ -76,7 +76,7 @@
 				// initialize
 				$rootScope.settings = {
 					showHistory: true,
-					sortOrder: "byName"
+					sortOrder: "name"
 				};
 				function fetchSettings() {
 					SettingsService.list()
@@ -304,10 +304,6 @@
 								onTap: createTag
 							}
 						]
-					}).then(function () {
-						console.log("success", arguments);
-					}, function () {
-						console.log("failure", arguments);
 					});
 				}
 

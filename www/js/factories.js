@@ -1,6 +1,40 @@
 ;(function (TagsApp, angular, _, undefined) {
 	"use strict";
 
+	function LocalStorageStore(prefix, localStorageService) {
+		this.prefix = prefix;
+		this.localStorageService = localStorageService;
+	}
+	LocalStorageStore.prototype._key = function (id) {
+		return this.prefix + id;
+	};
+	LocalStorageStore.prototype._get = function (key, DataClass) {
+		var value = this.localStorageService.get(key);
+
+		return DataClass ? new DataClass(value) : value;
+	};
+	LocalStorageStore.prototype.get = function (id, DataClass) {
+		return this._get(this._key(id), DataClass);
+	};
+	LocalStorageStore.prototype._set = function (key, obj) {
+		return this.localStorageService.set(key, obj);
+	};
+	LocalStorageStore.prototype.set = function (id, obj) {
+		return this._set(this._key(id), obj);
+	};
+	LocalStorageStore.prototype.list = function (DataClass) {
+		var list = [];
+
+		angular.forEach(this.localStorageService.keys(), function (key) {
+			if (key.indexOf(this.prefix) !== 0) { return; }
+
+			list.push(this._get(key, DataClass));
+		}, this);
+
+		return list;
+	};
+
+
 	function Barcode(attributes) {
 		if (!attributes) { return; }
 
@@ -131,54 +165,39 @@
 			"localStorageService",
 			"OrderByOptions",
 			function ($q, localStorageService, OrderByOptions) {
-				var KEY_PREFIX = "settings.", defaults;
-
-				defaults = {
+				var defaults = {
 					showHistory: true,
 					sortOrder: (function (options) {
 						for (var first in options) { return first; }
 					})(OrderByOptions)
 				};
 
-				function _key(id) {
-					return KEY_PREFIX + id;
-				}
-
-				function _get(key) {
-					var settingObj = localStorageService.get(key);
-
-					if (!settingObj) {
-						settingObj = { value: defaults[key] };
-					}
-
-					return settingObj.value;
-				}
-				function _set(key, obj) {
-					var settingObj = { value: obj };
-					return localStorageService.set(key, settingObj);
-				}
+				var Store = new LocalStorageStore("settings.", localStorageService);
 
 				return {
 					fetch: function (id) {
 						var deferred = $q.defer();
 
 						try {
-							deferred.resolve(_get(_key(id)));
+							var settingObj = Store.get(id);
+
+							deferred.resolve(settingObj ? settingObj.value : defaults[id]);
 						} catch (e) {
 							deferred.reject(e);
 						}
 
 						return deferred.promise;
 					},
-					list: function (sortOrder) {
+					// returns a dictionary, not an array
+					list: function () {
 						var deferred = $q.defer(), settings = {};
 
 						try {
-							angular.forEach(localStorageService.keys(), function (key) {
-								if (key.indexOf(KEY_PREFIX) !== 0) { return; }
+							var settingObjs = Store.list(), settings = {};
 
-								settings[key.replace(KEY_PREFIX, "")] = _get(key);
-							}, this);
+							angular.forEach(settingsObjs, function (settingObj) {
+								this[settingObj.key] = settingObj.value;
+							}, settings);
 
 							deferred.resolve(settings);
 						} catch (e) {
@@ -187,11 +206,14 @@
 
 						return deferred.promise;
 					},
-					save: function (key, value) {
+					save: function (id, val) {
 						var deferred = $q.defer();
 
 						try {
-							deferred.resolve(_set(_key(key), value));
+							deferred.resolve(Store.set(id, {
+								key: id,
+								value: val
+							}));
 						} catch (e) {
 							deferred.reject(e);
 						}
@@ -213,25 +235,184 @@
 				};
 			}
 		])
+		.factory("SettingsServiceSql", [
+			"$window",
+			"$q",
+			"$cordovaSQLite",
+			"OrderByOptions",
+			function ($window, $q, $cordovaSQLite, OrderByOptions) {
+				var VERSION = 3, STORE_NAME = "settings", defaults, db, request;
+
+				defaults = {
+					showHistory: true,
+					sortOrder: (function (options) {
+						for (var first in options) { return first; }
+					})(OrderByOptions)
+				};
+
+				request = $window.indexedDB.open(TagsApp.name, VERSION);
+				request.onsuccess = function (event) {
+					db = event.target.result;
+
+					dequeue();
+				};
+				request.onerror = function () {
+console.log("Database error: " + event.target.errorCode, arguments);
+				};
+
+				request.onupgradeneeded = function (event) {
+					var db;
+
+					db = event.target.result;
+					db.createObjectStore(STORE_NAME, { keyPath: "name" });
+				};
+
+				var queue = [];
+				function enqueue(fn) {
+					queue.push(fn);
+
+					dequeue();
+				}
+				function dequeue(fn) {
+					var fn;
+
+					if (!db) { return; }
+
+					while(fn = queue.shift()) {
+						fn();
+					}
+				}
+
+				return {
+					fetch: function (id) {
+						var deferred = $q.defer();
+
+						enqueue(function () {
+							var transaction, objectStore, request;
+
+							transaction = db.transaction([STORE_NAME]);
+							objectStore = transaction.objectStore(STORE_NAME);
+							request = objectStore.get(id);
+
+							request.onerror = function (event) {
+								// if simple not found, return default
+								deferred.reject(event.target.errorCode);
+							};
+							request.onsuccess = function (event) {
+								deferred.resolve(request.result.value);
+							};
+						});
+
+						return deferred.promise;
+					},
+					list: function () {
+						var deferred = $q.defer();
+
+						enqueue(function () {
+							var transaction, objectStore, request, settings = [];
+
+							transaction = db.transaction([STORE_NAME]);
+							objectStore = transaction.objectStore(STORE_NAME);
+							request = objectStore.openCursor(); // .getAll may work?
+
+							request.onerror = function (event) {
+								deferred.reject(event.target.errorCode);
+							};
+							request.onsuccess = function (event) {
+								var cursor = event.target.result;
+								if (cursor) {
+									settings.push(cursor.value);
+									cursor.continue();
+								} else {
+									deferred.resolve(settings);
+								}
+							};
+						});
+
+						return deferred.promise;
+					},
+					save: function (id, val) {
+						var obj = {
+							name: id,
+							value: val
+						};
+
+						if (id) {
+							return this.update(obj);
+						} else {
+							return this.create(obj);
+						}
+					},
+					create: function (obj) {
+						var deferred = $q.defer();
+
+						enqueue(function () {
+							var transaction, objectStore, request;
+
+							transaction = db.transaction([STORE_NAME], "readwrite");
+							objectStore = transaction.objectStore(STORE_NAME);
+							request = objectStore.add(obj);
+
+							request.onerror = function (event) {
+								deferred.reject(event.target.errorCode);
+							};
+							request.onsuccess = function (event) {
+								deferred.resolve(event.target.result);
+							};
+						});
+
+						return deferred.promise;
+					},
+					update: function (obj) {
+						var deferred = $q.defer();
+
+						enqueue(function () {
+							var transaction, objectStore, request;
+
+							transaction = db.transaction([STORE_NAME], "readwrite");
+							objectStore = transaction.objectStore(STORE_NAME);
+							request = objectStore.get(obj.name);
+
+							transaction.onerror = function (event) {
+								deferred.reject(event.target.errorCode);
+							};
+							request.onsuccess = function (event) {
+								var updateRequest, data = request.result;
+
+								angular.extend(data, obj);
+
+								updateRequest = objectStore.put(data);
+
+								updateRequest.onsuccess = function (event) {
+									deferred.resolve(event.target.result);
+								};
+							};
+						});
+
+						return deferred.promise;
+					},
+					getShowHistory: function () {
+						return this.fetch("showHistory");
+					},
+					setShowHistory: function (val) {
+						return this.save("showHistory", val);
+					},
+					getSortOrder: function () {
+						return this.fetch("sortOrder");
+					},
+					setSortOrder: function (val) {
+						return this.save("sortOrder", val);
+					}
+				}
+			}
+		])
 		.factory("TagsService", [
 			"$q",
 			"localStorageService",
 			function ($q, localStorageService) {
 				var KEY_PREFIX = "tag.", lastUpdated, cache = {};
 
-				function _key(id) {
-					return KEY_PREFIX + id;
-				}
-
-				function _get(key) {
-					return new Tag(localStorageService.get(key));
-				}
-				function _set(key, obj) {
-					return localStorageService.set(key, obj);
-				}
-				function _remove(key) {
-					return localStorageService.remove(key);
-				}
+				var Store = new LocalStorageStore("tag.", localStorageService);
 
 				return {
 					newId: function () {
@@ -242,7 +423,7 @@
 						var deferred = $q.defer();
 
 						try {
-							deferred.resolve(_get(_key(id)) || {});
+							deferred.resolve(Store.get(id, Tag) || {});
 						} catch (e) {
 							deferred.reject(e);
 						}
@@ -268,7 +449,7 @@
 						return deferred.promise;
 					},
 					list: function (sortOrder) {
-						var deferred = $q.defer(), tags = [];
+						var deferred = $q.defer();
 
 						if (cache.lastUpdated === lastUpdated && cache.data) {
 							deferred.resolve(new TagSort(cache.data).sort(sortOrder));
@@ -276,15 +457,9 @@
 						}
 
 						try {
-							angular.forEach(localStorageService.keys(), function (key) {
-								if (key.indexOf(KEY_PREFIX) !== 0) { return; }
-
-								tags.push(_get(key));
-							}, this);
-
 							cache = {
 								lastUpdated: lastUpdated,
-								data: tags
+								data: Store.list(Tag)
 							}
 							deferred.resolve(new TagSort(cache.data).sort(sortOrder));
 						} catch (e) {

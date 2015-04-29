@@ -105,8 +105,12 @@
 							}
 							$cordovaBarcodeScanner.scan()
 								.then(function (scanResponse) {
-									$scope.fruitlessScanAttempt = false;
-									$scope.onScanSuccess({ scanResponse: scanResponse });
+									$scope.fruitlessScanAttempt = !scanResponse;
+									if ($scope.fruitlessScanAttempt) {
+										$scope.onCancel();
+									} else {
+										$scope.onScanSuccess({ scanResponse: scanResponse });
+									}
 								}, function (error) {
 									$scope.fruitlessScanAttempt = true;
 									$scope.onScanError({ error: error });

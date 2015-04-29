@@ -1,5 +1,5 @@
 todo:
--
+- hold to delete usage
 
 bugs:
 - displaying barcodes
