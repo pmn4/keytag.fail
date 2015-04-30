@@ -31,9 +31,12 @@
 					if (window.AdMob) {
 						$cordovaGoogleAds.createBanner({
 							adId: TagsApp.AdMobIds.footerBanner,
+							bannerId: TagsApp.AdMobIds.footerBanner,
 							position: AdMob.AD_POSITION.BOTTOM_CENTER,
 							bgColor: "black",
-							autoShow: true
+							autoShow: true,
+							overlap: true,
+							orientationRenew: false
 						});
 					}
 

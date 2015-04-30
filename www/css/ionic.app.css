@@ -2565,9 +2565,9 @@ body, .ionic-body {
   padding: 0;
   color: white;
   word-wrap: break-word;
-  font-size: 14px;
+  font-size: 18px;
   font-family: "Helvetica Neue", "Roboto", sans-serif;
-  line-height: 20px;
+  line-height: 25px;
   text-rendering: optimizeLegibility;
   -webkit-backface-visibility: hidden;
   -webkit-user-drag: none;
@@ -2773,7 +2773,7 @@ ion-infinite-scroll {
  * --------------------------------------------------
  */
 p {
-  margin: 0 0 10px; }
+  margin: 0 0 12.5px; }
 
 small {
   font-size: 85%; }
@@ -2800,46 +2800,46 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .bar select.full-width, .h5, .h6 {
     line-height: 1; }
 
 h1, .h1, h2, .h2, h3, .h3 {
-  margin-top: 20px;
-  margin-bottom: 10px; }
+  margin-top: 25px;
+  margin-bottom: 12.5px; }
   h1:first-child, .h1:first-child, h2:first-child, .h2:first-child, h3:first-child, .h3:first-child {
     margin-top: 0; }
   h1 + h1, h1 + .h1, h1 + h2, h1 + .h2, h1 + h3, h1 + .h3, .h1 + h1, .h1 + .h1, .h1 + h2, .h1 + .h2, .h1 + h3, .h1 + .h3, h2 + h1, h2 + .h1, h2 + h2, h2 + .h2, h2 + h3, h2 + .h3, .h2 + h1, .h2 + .h1, .h2 + h2, .h2 + .h2, .h2 + h3, .h2 + .h3, h3 + h1, h3 + .h1, h3 + h2, h3 + .h2, h3 + h3, h3 + .h3, .h3 + h1, .h3 + .h1, .h3 + h2, .h3 + .h2, .h3 + h3, .h3 + .h3 {
-    margin-top: 10px; }
+    margin-top: 12.5px; }
 
 h4, .h4, .bar select.full-width, h5, .h5, h6, .h6 {
-  margin-top: 10px;
-  margin-bottom: 10px; }
+  margin-top: 12.5px;
+  margin-bottom: 12.5px; }
 
 h1, .h1 {
-  font-size: 36px; }
+  font-size: 46px; }
 
 h2, .h2 {
-  font-size: 30px; }
+  font-size: 38px; }
 
 h3, .h3 {
-  font-size: 24px; }
+  font-size: 31px; }
 
 h4, .h4, .bar select.full-width {
-  font-size: 18px; }
+  font-size: 23px; }
 
 h5, .h5 {
-  font-size: 14px; }
-
-h6, .h6 {
-  font-size: 12px; }
-
-h1 small, .h1 small {
-  font-size: 24px; }
-
-h2 small, .h2 small {
   font-size: 18px; }
 
+h6, .h6 {
+  font-size: 16px; }
+
+h1 small, .h1 small {
+  font-size: 31px; }
+
+h2 small, .h2 small {
+  font-size: 23px; }
+
 h3 small, .h3 small, h4 small, .h4 small, .bar select.full-width small {
-  font-size: 14px; }
+  font-size: 18px; }
 
 dl {
-  margin-bottom: 20px; }
+  margin-bottom: 25px; }
 
 dt, dd {
   line-height: 1.42857; }
@@ -2848,12 +2848,12 @@ dt {
   font-weight: bold; }
 
 blockquote {
-  margin: 0 0 20px;
-  padding: 10px 20px;
+  margin: 0 0 25px;
+  padding: 12.5px 25px;
   border-left: 5px solid gray; }
   blockquote p {
     font-weight: 300;
-    font-size: 17.5px;
+    font-size: 22.5px;
     line-height: 1.25; }
   blockquote p:last-child {
     margin-bottom: 0; }
@@ -2868,7 +2868,7 @@ q:before, q:after, blockquote:before, blockquote:after {
 
 address {
   display: block;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   font-style: normal;
   line-height: 1.42857; }
 
@@ -5620,7 +5620,7 @@ legend {
   width: 100%;
   border: 1px solid dimgray;
   color: white;
-  font-size: 21px;
+  font-size: 27px;
   line-height: 2.85714; }
   legend small {
     color: #f8f8f8;
@@ -5628,7 +5628,7 @@ legend {
 
 label, input, button, select, textarea {
   font-weight: normal;
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.42857; }
 
 input, button, select, textarea {
@@ -5773,7 +5773,7 @@ input, button, select, textarea {
 
 .item-stacked-label input {
   overflow: hidden;
-  height: 46px; }
+  height: 55px; }
 
 .item-floating-label {
   display: block;
@@ -5796,11 +5796,11 @@ textarea, input[type="text"], input[type="password"], input[type="datetime"], in
   display: block;
   padding-top: 2px;
   padding-left: 0;
-  height: 34px;
+  height: 43px;
   color: #f4f4f4;
   vertical-align: middle;
-  font-size: 14px;
-  line-height: 16px; }
+  font-size: 18px;
+  line-height: 20px; }
 
 .platform-ios input[type="datetime-local"], .platform-ios input[type="date"], .platform-ios input[type="month"], .platform-ios input[type="time"], .platform-ios input[type="week"], .platform-android input[type="datetime-local"], .platform-android input[type="date"], .platform-android input[type="month"], .platform-android input[type="time"], .platform-android input[type="week"] {
   padding-top: 8px; }
@@ -5832,7 +5832,7 @@ input[type="radio"], input[type="checkbox"] {
   width: auto; }
 
 input[type="file"] {
-  line-height: 34px; }
+  line-height: 39px; }
 
 .previous-input-focus, .cloned-text-input + input, .cloned-text-input + textarea {
   position: absolute !important;
@@ -6383,7 +6383,7 @@ input[type="radio"][disabled], input[type="checkbox"][disabled], input[type="rad
     text-indent: .01px;
     text-overflow: '';
     white-space: nowrap;
-    font-size: 14px;
+    font-size: 18px;
     cursor: pointer;
     direction: rtl; }
   .item-select select::-ms-expand {
@@ -7604,7 +7604,7 @@ a.button {
   transition-duration: 0s; }
 
 .pane, .view {
-  background-image: url('/img/bg-pattern.svg');
+  background-image: url('../img/bg-pattern.svg');
   background-repeat: repeat; }
 
 .item-complex .item-content, .item-radio .item-content {
@@ -7632,8 +7632,15 @@ textarea, input[type="text"], input[type="password"], input[type="datetime"], in
 .slider {
   min-height: 100%; }
 
-.new-tag {
-  padding-top: 20vw; }
+.new-tag img {
+  display: block;
+  width: 75%;
+  margin: 0 auto 5vw;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-width: 1px;
+  border-style: solid; }
 
 .tag-barcode .barcode {
   width: 100%;
@@ -7666,7 +7673,7 @@ textarea, input[type="text"], input[type="password"], input[type="datetime"], in
   float: left;
   margin-right: 5vw; }
 .question p {
-  font-size: 18px;
+  font-size: 24px;
   line-height: 1.3; }
 .question a {
   color: inherit; }

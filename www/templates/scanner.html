@@ -1,9 +1,20 @@
 <div>
-	<button class="button icon-left ion-checkmark-circled button-block button-calm" ng-click="openScanner()">
-		Scan a Key Tag
-	</button>
+	<div ng-hide="fruitlessScanAttempt">
+		<p>
+			How to scan:
+		</p>
+		<img src="./img/how-to-scan.gif" ng-click="openScanner()" />
+		<button class="button icon-left ion-checkmark-circled button-block button-calm" ng-click="openScanner()">
+			Scan a Key Tag
+		</button>
+	</div>
 	<form ng-submit="onSuccess({ scanResponse: barcode })" ng-show="fruitlessScanAttempt">
 		<div class="list">
+			<img src="./img/confused.gif" />
+			<p>
+				huh. seems the scanner is not supported on your phone? idk...
+				anyway just enter the numbers/characters on your barcode and pick your format
+			</p>
 			<label class="item item-input">
 				<span class="input-label">Enter Code</span>
 				<input type="text" name="barcode-text" ng-model="barcode.text" />

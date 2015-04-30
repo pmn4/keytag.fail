@@ -17,7 +17,9 @@
 		return this._get(this._key(id), DataClass);
 	};
 	LocalStorageStore.prototype._set = function (key, obj) {
-		return this.localStorageService.set(key, obj);
+		var success = this.localStorageService.set(key, obj);
+
+		return success ? obj : null;
 	};
 	LocalStorageStore.prototype.set = function (id, obj) {
 		return this._set(this._key(id), obj);
@@ -32,6 +34,12 @@
 		}, this);
 
 		return list;
+	};
+	LocalStorageStore.prototype._remove = function (key) {
+		return this.localStorageService.remove(key);
+	};
+	LocalStorageStore.prototype.remove = function (key) {
+		return this._remove(this._key(key));
 	};
 
 
@@ -140,7 +148,7 @@
 			.value();
 	};
 	Tag.prototype.nameSort = function () {
-		return this.issuer;
+		return (this.issuer || "").toLowerCase();
 	};
 	/// sorting algorithms
 
@@ -235,177 +243,6 @@
 				};
 			}
 		])
-		.factory("SettingsServiceSql", [
-			"$window",
-			"$q",
-			"$cordovaSQLite",
-			"OrderByOptions",
-			function ($window, $q, $cordovaSQLite, OrderByOptions) {
-				var VERSION = 3, STORE_NAME = "settings", defaults, db, request;
-
-				defaults = {
-					showHistory: true,
-					sortOrder: (function (options) {
-						for (var first in options) { return first; }
-					})(OrderByOptions)
-				};
-
-				request = $window.indexedDB.open(TagsApp.name, VERSION);
-				request.onsuccess = function (event) {
-					db = event.target.result;
-
-					dequeue();
-				};
-				request.onerror = function () {
-console.log("Database error: " + event.target.errorCode, arguments);
-				};
-
-				request.onupgradeneeded = function (event) {
-					var db;
-
-					db = event.target.result;
-					db.createObjectStore(STORE_NAME, { keyPath: "name" });
-				};
-
-				var queue = [];
-				function enqueue(fn) {
-					queue.push(fn);
-
-					dequeue();
-				}
-				function dequeue(fn) {
-					var fn;
-
-					if (!db) { return; }
-
-					while(fn = queue.shift()) {
-						fn();
-					}
-				}
-
-				return {
-					fetch: function (id) {
-						var deferred = $q.defer();
-
-						enqueue(function () {
-							var transaction, objectStore, request;
-
-							transaction = db.transaction([STORE_NAME]);
-							objectStore = transaction.objectStore(STORE_NAME);
-							request = objectStore.get(id);
-
-							request.onerror = function (event) {
-								// if simple not found, return default
-								deferred.reject(event.target.errorCode);
-							};
-							request.onsuccess = function (event) {
-								deferred.resolve(request.result.value);
-							};
-						});
-
-						return deferred.promise;
-					},
-					list: function () {
-						var deferred = $q.defer();
-
-						enqueue(function () {
-							var transaction, objectStore, request, settings = [];
-
-							transaction = db.transaction([STORE_NAME]);
-							objectStore = transaction.objectStore(STORE_NAME);
-							request = objectStore.openCursor(); // .getAll may work?
-
-							request.onerror = function (event) {
-								deferred.reject(event.target.errorCode);
-							};
-							request.onsuccess = function (event) {
-								var cursor = event.target.result;
-								if (cursor) {
-									settings.push(cursor.value);
-									cursor.continue();
-								} else {
-									deferred.resolve(settings);
-								}
-							};
-						});
-
-						return deferred.promise;
-					},
-					save: function (id, val) {
-						var obj = {
-							name: id,
-							value: val
-						};
-
-						if (id) {
-							return this.update(obj);
-						} else {
-							return this.create(obj);
-						}
-					},
-					create: function (obj) {
-						var deferred = $q.defer();
-
-						enqueue(function () {
-							var transaction, objectStore, request;
-
-							transaction = db.transaction([STORE_NAME], "readwrite");
-							objectStore = transaction.objectStore(STORE_NAME);
-							request = objectStore.add(obj);
-
-							request.onerror = function (event) {
-								deferred.reject(event.target.errorCode);
-							};
-							request.onsuccess = function (event) {
-								deferred.resolve(event.target.result);
-							};
-						});
-
-						return deferred.promise;
-					},
-					update: function (obj) {
-						var deferred = $q.defer();
-
-						enqueue(function () {
-							var transaction, objectStore, request;
-
-							transaction = db.transaction([STORE_NAME], "readwrite");
-							objectStore = transaction.objectStore(STORE_NAME);
-							request = objectStore.get(obj.name);
-
-							transaction.onerror = function (event) {
-								deferred.reject(event.target.errorCode);
-							};
-							request.onsuccess = function (event) {
-								var updateRequest, data = request.result;
-
-								angular.extend(data, obj);
-
-								updateRequest = objectStore.put(data);
-
-								updateRequest.onsuccess = function (event) {
-									deferred.resolve(event.target.result);
-								};
-							};
-						});
-
-						return deferred.promise;
-					},
-					getShowHistory: function () {
-						return this.fetch("showHistory");
-					},
-					setShowHistory: function (val) {
-						return this.save("showHistory", val);
-					},
-					getSortOrder: function () {
-						return this.fetch("sortOrder");
-					},
-					setSortOrder: function (val) {
-						return this.save("sortOrder", val);
-					}
-				}
-			}
-		])
 		.factory("TagsService", [
 			"$q",
 			"localStorageService",
@@ -485,7 +322,7 @@ console.log("Database error: " + event.target.errorCode, arguments);
 						}
 
 						try {
-							deferred.resolve(_set(_key(tagObj.id), tagObj));
+							deferred.resolve(Store.set(tagObj.id, tagObj));
 						} catch (e) {
 							deferred.reject(e);
 						}
@@ -498,7 +335,7 @@ console.log("Database error: " + event.target.errorCode, arguments);
 						lastUpdated = new Date();
 
 						try {
-							_remove(_key(id));
+							Store.remove(id);
 
 							deferred.resolve();
 						} catch (e) {

@@ -96,8 +96,6 @@
 						$scope.fruitlessScanAttempt = false;
 						$scope.BarCodeFormats = Object.keys(BarCodeFormatMap);
 
-						$scope.$watch("barcode.format", function () { console.log("format: ", arguments); });
-
 						$scope.openScanner = function () {
 							if (!$window.cordova) {
 								$scope.fruitlessScanAttempt = true;
@@ -105,7 +103,7 @@
 							}
 							$cordovaBarcodeScanner.scan()
 								.then(function (scanResponse) {
-									$scope.fruitlessScanAttempt = !scanResponse;
+									$scope.fruitlessScanAttempt = !scanResponse || !scanResponse.text;
 									if ($scope.fruitlessScanAttempt) {
 										$scope.onCancel();
 									} else {

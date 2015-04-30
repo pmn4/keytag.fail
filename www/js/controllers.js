@@ -169,10 +169,15 @@
 			"$timeout",
 			"$stateParams",
 			"$ionicModal",
+			"$ionicPopup",
 			"AppConfig",
 			"TagsService",
-			function ($rootScope, $scope, $state, $timeout, $stateParams, $ionicModal, AppConfig, TagsService) {
+			function ($rootScope, $scope, $state, $timeout, $stateParams, $ionicModal, $ionicPopup, AppConfig, TagsService) {
 				$scope.hasUsed = false;
+
+				if (!$stateParams.tagId) {
+					$state.go("app.tag-list", {}, { location: "replace" });
+				}
 
 				$scope.displayTag = function (tagId) {
 					$scope.tagModal.show();
@@ -230,12 +235,22 @@
 				};
 
 				$scope.delete = function () {
-					// @todo: prompt
-					TagsService.destroy($scope.tag.id)
-						.then(function (tag) {
-							$rootScope.$broadcast(Events.DeleteTag, tag);
-							$state.go("app.tag-list")
-						});
+					$ionicPopup.confirm({
+						title: "Delete Tag",
+						template: "Are you sure? This tag cannot be recovered once deleted."
+					}).then(function (res) {
+						if (res) {
+							var issuer = $scope.tag.issuer;
+							TagsService.destroy($scope.tag.id)
+								.then(function (tag) {
+									$scope.trackEvent("Tag", "Destroy", issuer, 0);
+									$rootScope.$broadcast(Events.DeleteTag, tag);
+									$state.go("app.tag-list")
+								}, function () { console.log(arguments); });
+						} else {
+							$scope.trackEvent("Tag", "Cancel Destroy", issuer, 0);
+						}
+					});
 				};
 
 				$ionicModal.fromTemplateUrl(AppConfig.templatesPath + "modals/tag.html", function (modal) {
@@ -291,7 +306,7 @@
 
 				function completeCreate() {
 					$ionicPopup.show({
-						template: '<input type="text" ng-model="tag.issuer" placeholder="ex. Starbucks, A&amp;P">',
+						template: '<input type="text" ng-model="tag.issuer" placeholder="ex. Starbucks, A&amp;P" autofocus="autofocus">',
 						title: "Enter Issuer",
 						scope: $scope,
 						buttons: [
@@ -311,7 +326,7 @@
 					TagsService.save($scope.tag)
 						.then(function (tag) {
 							$rootScope.$broadcast(Events.CreateTag, tag);
-							$state.go("app.tag-detail", { tagId: $scope.tag.id }, { location: "replace" });
+							$state.go("app.tag-detail", { tagId: tag.id }, { location: "replace" });
 						}, function (message) {
 							$scope.showError(message);
 							$scope.trackEvent("TagCreate Error: " + message);
@@ -328,6 +343,7 @@
 
 				$rootScope.$on(Events.CreateTag, function () {
 					$scope.tag = {};
+					$scope.showMessage("Tag Created");
 				});
 			}
 		])

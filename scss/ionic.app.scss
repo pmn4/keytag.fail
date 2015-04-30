@@ -14,6 +14,11 @@ $base-color: $dark;
 $base-background-color: $light;
 $input-color: mix($dark, $light, 100% * 15/16); // #111
 
+$font-size-base: 18px !global;
+$font-size-large: 24px !global;
+$font-size-small: 14px !global;
+
+
 $menu-bg: $lighter;
 
 $item-divider-bg: $lighter;
@@ -64,7 +69,7 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 //
 .pane,
 .view {
-	background-image: url('/img/bg-pattern.svg');
+	background-image: url('../img/bg-pattern.svg');
 	background-repeat: repeat;
 }
 .item-complex .item-content,
@@ -122,7 +127,14 @@ input[type="color"] {
 	min-height: 100%;
 }
 .new-tag {
-	padding-top: 20vw;
+	img {
+		display: block;
+		width: 75%;
+		margin: 0 auto 5vw;
+		@include box-sizing(border-box);
+		border-width: 1px;
+		border-style: solid;
+	}
 }
 .tag-barcode {
 	.barcode {
