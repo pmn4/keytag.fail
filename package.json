@@ -18,10 +18,11 @@
     "org.apache.cordova.device",
     "org.apache.cordova.console",
     "com.ionic.keyboard",
-    "com.danielcwilson.plugins.googleanalytics"
+    "com.danielcwilson.plugins.googleanalytics",
+    "cordova",
+    "com.google.cordova.admob"
   ],
   "cordovaPlatforms": [
-    "ios",
-    "android"
+    "ios"
   ]
 }
