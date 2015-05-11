@@ -4,6 +4,7 @@
 	angular
 		.module(TagsApp.name, [
 			"ionic",
+			"ionic.service.core",
 			"LocalStorageModule",
 			"ngCordova",
 			TagsApp.name + ".constants",
@@ -48,10 +49,20 @@
 		])
 
 		.config([
+			"$ionicAppProvider",
 			"$stateProvider",
 			"$urlRouterProvider",
 			"localStorageServiceProvider",
-			function ($stateProvider, $urlRouterProvider, localStorageServiceProvider) {
+			function ($ionicAppProvider, $stateProvider, $urlRouterProvider, localStorageServiceProvider) {
+				$ionicAppProvider.identify({
+					// The App ID (from apps.ionic.io) for the server
+					app_id: "eff6a445",
+					// The public API key all services will use for this app
+					api_key: "1d8513daa93e0f97ec4c2ce0cbd1c694a4f0fe45714cc59f",
+					// The GCM project ID (project number) from your Google Developer Console
+					gcm_id: "826581724252"
+				});
+
 				localStorageServiceProvider.setPrefix(TagsApp.name);
 
 				$stateProvider

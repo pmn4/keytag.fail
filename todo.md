@@ -2,8 +2,6 @@ todo:
 - hold to delete usage
 
 bugs:
-- displaying barcodes
-- tag sort order (might be a data issue?)
 
 done:
 - local storage
@@ -21,13 +19,16 @@ done:
 - after save, prompt for issuer
 - promise w/gifs
 - tag sort order
+- displaying barcodes
+- tag sort order (might be a data issue?)
 
 backlog:
 - send tag (to another device, to a family member, etc)
+- replace localStorage to eliminate risk of losing data (File API?)
 - push notify "Did it work?"
 - load from screenshot
 - add photo of tag
-- proximity control
+- proximity control to emit barcode
 ?- splash screen
 - pull to refresh
 - auto start scanner on left menu link
