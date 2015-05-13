@@ -37,15 +37,15 @@
 			UPC_E: "upce",
 			UPC_EAN_EXTENSION: ""
 		})
-		.constant("OrderByOptions", {
-			name: "Alphabetical",
-			mostRecent: "Most Recently Created",
-			mostRecentUse: "Most Recently Used",
-			mostRecentSuccess: "Most Recent Success",
-			mostRecentFailure: "Most Recent Failure",
-			mostUsed: "Most Used",
-			mostSuccessful: "Most Successful",
-			mostFailed: "Least Successful"
-		})
+		.constant("OrderByOptions", [
+			{ key: "name", display: "Alphabetical" },
+			{ key: "mostRecent", display: "Most Recently Created" },
+			{ key: "mostRecentUse", display: "Most Recently Used" },
+			{ key: "mostRecentSuccess", display: "Most Recent Success" },
+			{ key: "mostRecentFailure", display: "Most Recent Failure" },
+			{ key: "mostUsed", display: "Most Used" },
+			{ key: "mostSuccessful", display: "Most Successful" },
+			{ key: "mostFailed", display: "Least Successful" }
+		])
 	;
 })(window.TagsApp, window.angular, window.location);

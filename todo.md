@@ -32,3 +32,4 @@ backlog:
 ?- splash screen
 - pull to refresh
 - auto start scanner on left menu link
+- settings page w/version, check for updates

@@ -5,6 +5,7 @@
 		.module(TagsApp.name, [
 			"ionic",
 			"ionic.service.core",
+			"ionic.service.deploy",
 			"LocalStorageModule",
 			"ngCordova",
 			TagsApp.name + ".constants",
@@ -48,6 +49,37 @@
 			}
 		])
 
+		.run([
+			"$ionicPlatform",
+			"$ionicDeploy",
+			"$rootScope",
+			"$state",
+			"$q",
+			function ($ionicPlatform, $ionicDeploy, $rootScope, $state, $q) {
+				// var check = $q.defer();
+
+				// Check for updates
+				$ionicDeploy.check()
+				// check.promise
+					.then(function (newVersionAvailable) {
+						if (newVersionAvailable) {
+							$ionicPlatform.ready(function () {
+								$state.go("app.update", {}, {
+									location: false // maintain the URL so we know where to go when done
+								});
+							});
+						} else {
+							// No updates, load the most up to date version of the app
+							$ionicDeploy.load();
+						}
+					}, function (error) {
+						// Error checking for updates
+					})
+
+				// check.resolve(true);
+			}
+		])
+
 		.config([
 			"$ionicAppProvider",
 			"$stateProvider",
@@ -71,6 +103,16 @@
 						abstract: true,
 						templateUrl: "templates/menu.html",
 						controller: "AppController"
+					})
+
+					.state("app.update", {
+						url: "/update",
+						views: {
+							"menuContent": {
+								templateUrl: "templates/app-update.html",
+								controller: "AppUpdateController"
+							}
+						}
 					})
 
 					.state("app.welcome", {

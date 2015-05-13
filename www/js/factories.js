@@ -203,7 +203,7 @@
 						try {
 							var settingObjs = Store.list(), settings = {};
 
-							angular.forEach(settingsObjs, function (settingObj) {
+							angular.forEach(settingObjs, function (settingObj) {
 								this[settingObj.key] = settingObj.value;
 							}, settings);
 

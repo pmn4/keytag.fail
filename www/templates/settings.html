@@ -6,7 +6,7 @@
 
 			<label class="item item-input item-select">
 				<div class="input-label">Tag Sort Order</div>
-				<select ng-model="settings.sortOrder" ng-options="k as v for (k, v) in orderByOptions">
+				<select ng-model="settings.sortOrder" ng-options="opt.key as opt.display for opt in orderByOptions">
 				</select>
 			</label>
 		</div>

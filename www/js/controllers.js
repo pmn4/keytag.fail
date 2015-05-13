@@ -50,7 +50,6 @@
 						return;
 					}
 
-
 					$cordovaGoogleAnalytics.trackEvent(category, action, label, value);
 				};
 
@@ -64,7 +63,7 @@
 					}
 
 					if (tag) {
-						view = [
+						trackView = [
 							view,
 							tag && tag.issuer || ""
 						].join(":");
@@ -81,7 +80,10 @@
 				function fetchSettings() {
 					SettingsService.list()
 						.then(function (settings) {
+							// can we hide the action from $watchers?
 							$rootScope.settings = settings;
+						}, function (message) {
+							$scope.trackEvent("Settings", "List", message, 1);
 						});
 				}
 				$rootScope.$on(Events.UpdatedSettings, fetchSettings);
@@ -89,17 +91,86 @@
 
 				// iterate over all settings?
 				// use localService.bind?
-				$scope.$watch("settings.showHistory", function (val) {
+				$scope.$watch("settings.showHistory", function (val, previousVal) {
+					if (val === previousVal) { return; }
+
 					SettingsService.setShowHistory(val)
 						.then(function () {
 							$rootScope.$broadcast(Events.UpdatedSettings);
+							$scope.trackEvent("Settings", "ShowHistory", val, 1);
+						}, function (message) {
+							$scope.trackEvent("Settings", "ShowHistory", message, 1);
 						});
 				});
-				$scope.$watch("settings.sortOrder", function (val) {
+				$scope.$watch("settings.sortOrder", function (val, previousVal) {
+					if (val === previousVal) { return; }
+
 					SettingsService.setSortOrder(val)
 						.then(function () {
 							$rootScope.$broadcast(Events.UpdatedSettings);
+							$scope.trackEvent("Settings", "SortOrder", val, 1);
+						}, function (message) {
+							$scope.trackEvent("Settings", "SortOrder", message, 1);
 						});
+				});
+			}
+		])
+
+		.controller("AppUpdateController", [
+			"$scope",
+			"$ionicDeploy",
+			"$q",
+			"$timeout",
+			function ($scope, $ionicDeploy, $q, $timeout) {
+				$scope.downloadProgress = 0;
+				$scope.extractionProgress = 0;
+
+				// var download = $q.defer(), extract = $q.defer();
+
+				// function fakeIt(deferred) {
+				// 	deferred.progress = deferred.progress || 0;
+
+				// 	if (deferred.progress > 1) {
+				// 		return deferred.resolve(1.0);
+				// 	}
+
+				// 	deferred.progress = deferred.progress + 0.1;
+				// 	deferred.notify(deferred.progress);
+
+				// 	$timeout(function () {
+				// 		fakeIt(deferred);
+				// 	}, 300);
+				// }
+
+				// Download the updates
+				$ionicDeploy.download()
+					.then(function () {
+						// Extract the updates
+						$ionicDeploy.extract()
+							.then(function () {
+								// Load the updated version
+								$ionicDeploy.load();
+								$scope.trackEvent("AppUpdate", "Extract", "success", 1);
+							}, function (message) {
+								$scope.showError(message);
+								$scope.trackEvent("AppUpdate", "Extract", message, 1);
+							}, function (progress) {
+								$scope.extractionProgress = progress;
+							});
+
+						$scope.trackEvent("AppUpdate", "Download", "success", 1);
+						// fakeIt(extract);
+					}, function (message) {
+						$scope.showError(message);
+						$scope.trackEvent("AppUpdate", "Download", message, 1);
+					}, function (progress) {
+						$scope.downloadProgress = progress;
+					});
+
+				// fakeIt(download);
+
+				$scope.$on("$ionicView.enter", function () {
+					$scope.trackView("AppUpdate");
 				});
 			}
 		])
@@ -119,15 +190,14 @@
 							$scope.tags = tags;
 						}, function (message) {
 							$scope.showError(message);
-							$scope.trackEvent("TagList Error: " + message);
+							$scope.trackEvent("TagList", "List", message, 1);
 						});
 				}
 				// if we refresh on each page load, I think these are unnecessary
 				// $rootScope.$on(Events.CreateTag, refresh);
 				// $rootScope.$on(Events.DeleteTag, refresh);
 				// $rootScope.$on(Events.UpdateTag, refresh);
-				$scope.$watch("settings.sortOrder", refresh);
-
+				$rootScope.$on(Events.UpdatedSettings, refresh);
 				refresh();
 
 				$scope.$on("$ionicView.enter", function () {
@@ -156,7 +226,7 @@
 								tagId: tags[tagIndex + offset % tags.length]
 							});
 						}, function (message) {
-							$scope.trackEvent("TagNavigation Error: " + message);
+							$scope.trackEvent("TagNavigation", "List", message, 1);
 						});
 				}
 			}
@@ -188,7 +258,7 @@
 				};
 
 				$scope.scanSuccess = function () {
-					$scope.trackEvent("Tag", "Use", $scope.tag.issuer, 1);
+					$scope.trackEvent("TagDetail", "ScanSuccess", $scope.tag.issuer, 1);
 
 					$scope.tag.success();
 					$scope.save();
@@ -206,7 +276,7 @@
 				// });
 
 				$scope.scanFailure = function () {
-					$scope.trackEvent("Tag", "Use", $scope.tag.issuer, 0);
+					$scope.trackEvent("TagDetail", "ScanFailure", $scope.tag.issuer, 1);
 
 					$scope.tag.failure();
 					$scope.save();
@@ -231,6 +301,9 @@
 					TagsService.save($scope.tag)
 						.then(function (tag) {
 							$rootScope.$broadcast(Events.UpdateTag, tag);
+							$scope.trackEvent("TagDetail", "Save", tag.issuer, 1);
+						}, function (message) {
+							$scope.trackEvent("TagDetail", "Save", message, 1);
 						});
 				};
 
@@ -243,13 +316,17 @@
 							var issuer = $scope.tag.issuer;
 							TagsService.destroy($scope.tag.id)
 								.then(function (tag) {
-									$scope.trackEvent("Tag", "Destroy", issuer, 0);
+									$scope.trackEvent("TagDetail", "Destroy", issuer, 1);
 									$rootScope.$broadcast(Events.DeleteTag, tag);
 									$state.go("app.tag-list")
-								}, function () { console.log(arguments); });
+								}, function (message) {
+									$scope.trackEvent("TagDetail", "Destroy", message, 1);
+								});
 						} else {
-							$scope.trackEvent("Tag", "Cancel Destroy", issuer, 0);
+							$scope.trackEvent("TagDetail", "Cancel Destroy", issuer, 1);
 						}
+					}, function (message) {
+						$scope.trackEvent("TagDetail", "IonicPopup#confirm", message, 1);
 					});
 				};
 
@@ -265,7 +342,17 @@
 				TagsService.fetch($stateParams.tagId)
 					.then(function (tag) {
 						$scope.tag = tag;
+					}, function (message) {
+						$scope.trackEvent("TagDetail", "Fetch", message, 1);
 					});
+
+				$scope.$on("$ionicView.enter", function () {
+					var unwatch = $scope.$watch("tag", function (tag) {
+						$scope.trackView("TagDetail", tag);
+
+						unwatch();
+					});
+				});
 			}
 		])
 
@@ -285,7 +372,7 @@
 					completeCreate();
 
 					$scope.showMessage("Tag Saved");
-					$scope.trackEvent("Tag", "Scan", barcode.entryMethod, 1);
+					$scope.trackEvent("TagCreate", "Scan", barcode.entryMethod, 1);
 				};
 				$scope.scanSuccess = function (barcode) {
 					barcode.entryMethod = "scanner";
@@ -293,15 +380,15 @@
 					completeCreate();
 
 					$scope.showMessage("Tag Saved");
-					$scope.trackEvent("Tag", "Scan", barcode.entryMethod, 1);
+					$scope.trackEvent("TagCreate", "Scan", barcode.entryMethod, 1);
 				};
 				$scope.scanError = function (error) {
 					$scope.showError(error);
 
-					$scope.trackEvent("Tag", "Scan", "scanner", 0);
+					$scope.trackEvent("TagCreate", "Scan", "scanner", 1);
 				};
 				$scope.cancelCreation = function () {
-					$scope.trackEvent("Tag", "Scan", "cancel", 1);
+					$scope.trackEvent("TagCreate", "Scan", "cancel", 1);
 				};
 
 				function completeCreate() {
@@ -329,16 +416,16 @@
 							$state.go("app.tag-detail", { tagId: tag.id }, { location: "replace" });
 						}, function (message) {
 							$scope.showError(message);
-							$scope.trackEvent("TagCreate Error: " + message);
+							$scope.trackEvent("TagCreate", "Save", message, 1);
 						});
 				};
 
 				function cancelCreateTag() {
-					$scope.trackEvent("TagCreate Cancel");
+					$scope.trackEvent("TagCreate", "Cancel", $scope.tag.issuer, 1);
 				};
 
 				$scope.$on("$ionicView.enter", function () {
-					$scope.trackView("NewTag");
+					$scope.trackView("TagCreate");
 				});
 
 				$rootScope.$on(Events.CreateTag, function () {
@@ -360,6 +447,8 @@
 					SettingsService.list()
 						.then(function (settings) {
 							$rootScope.settings = settings;
+						}, function (message) {
+							$scope.trackEvent("SettingsList", "List", message, 1);
 						});
 				}
 				refresh();
@@ -367,7 +456,7 @@
 				$rootScope.$on(Events.UpdatedSettings, refresh);
 
 				$scope.$on("$ionicView.enter", function () {
-					$scope.trackView("settings");
+					$scope.trackView("Settings");
 				});
 			}
 		])
@@ -379,7 +468,7 @@
 				$scope.q = $stateParams.q;
 
 				$scope.$on("$ionicView.enter", function () {
-					$scope.trackView("faq");
+					$scope.trackView("Faq");
 				});
 			}
 		])
@@ -401,10 +490,12 @@
 						} else {
 							welcome();
 						}
+					}, function (message) {
+						$scope.trackEvent("Welcome", "List", message, 1);
 					});
 
 				$scope.$on("$ionicView.enter", function () {
-					$scope.trackView("welcome");
+					$scope.trackView("Welcome");
 				});
 			}
 		])

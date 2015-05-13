@@ -25,8 +25,7 @@
 					restrict: "E",
 					scope: {
 						tag: "=",
-						showHistory: "=",
-						onToggleHistory: "&"
+						showHistory: "="
 					},
 					templateUrl: AppConfig.templatesPath + "key-tag-history.html"
 				};
