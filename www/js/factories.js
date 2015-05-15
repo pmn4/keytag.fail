@@ -1,48 +1,6 @@
 ;(function (TagsApp, angular, _, undefined) {
 	"use strict";
 
-	function LocalStorageStore(prefix, localStorageService) {
-		this.prefix = prefix;
-		this.localStorageService = localStorageService;
-	}
-	LocalStorageStore.prototype._key = function (id) {
-		return this.prefix + id;
-	};
-	LocalStorageStore.prototype._get = function (key, DataClass) {
-		var value = this.localStorageService.get(key);
-
-		return DataClass ? new DataClass(value) : value;
-	};
-	LocalStorageStore.prototype.get = function (id, DataClass) {
-		return this._get(this._key(id), DataClass);
-	};
-	LocalStorageStore.prototype._set = function (key, obj) {
-		var success = this.localStorageService.set(key, obj);
-
-		return success ? obj : null;
-	};
-	LocalStorageStore.prototype.set = function (id, obj) {
-		return this._set(this._key(id), obj);
-	};
-	LocalStorageStore.prototype.list = function (DataClass) {
-		var list = [];
-
-		angular.forEach(this.localStorageService.keys(), function (key) {
-			if (key.indexOf(this.prefix) !== 0) { return; }
-
-			list.push(this._get(key, DataClass));
-		}, this);
-
-		return list;
-	};
-	LocalStorageStore.prototype._remove = function (key) {
-		return this.localStorageService.remove(key);
-	};
-	LocalStorageStore.prototype.remove = function (key) {
-		return this._remove(this._key(key));
-	};
-
-
 	function Barcode(attributes) {
 		if (!attributes) { return; }
 
@@ -170,26 +128,28 @@
 	angular.module(TagsApp.name + ".factories", [])
 		.factory("SettingsService", [
 			"$q",
-			"localStorageService",
+			"$localForage", // "localStorageService",
 			"OrderByOptions",
-			function ($q, localStorageService, OrderByOptions) {
-				var defaults = {
+			function ($q, storageService, OrderByOptions) {
+				var PREFIX = "settings.", defaults = {
 					showHistory: true,
-					sortOrder: (function (options) {
-						for (var first in options) { return first; }
-					})(OrderByOptions)
+					sortOrder: OrderByOptions[0].key
 				};
 
-				var Store = new LocalStorageStore("settings.", localStorageService);
-
 				return {
+					key: function (id) {
+						return PREFIX + id;
+					},
 					fetch: function (id) {
 						var deferred = $q.defer();
 
 						try {
-							var settingObj = Store.get(id);
-
-							deferred.resolve(settingObj ? settingObj.value : defaults[id]);
+							storageService.getItem(this.key(id))
+								.then(function (settingObj) {
+									deferred.resolve(settingObj ? settingObj.value : defaults[id]);
+								}, function (e) {
+									deferred.reject(e)
+								});
 						} catch (e) {
 							deferred.reject(e);
 						}
@@ -198,16 +158,18 @@
 					},
 					// returns a dictionary, not an array
 					list: function () {
-						var deferred = $q.defer(), settings = {};
+						var deferred = $q.defer(), settings = angular.extend({}, defaults);
 
 						try {
-							var settingObjs = Store.list(), settings = {};
+							storageService.iterate(function (settingObj, key) {
+								if (!key || key.indexOf(PREFIX) !== 0) { return; }
 
-							angular.forEach(settingObjs, function (settingObj) {
-								this[settingObj.key] = settingObj.value;
-							}, settings);
-
-							deferred.resolve(settings);
+								settings[settingObj.key] = settingObj.value;
+							}).then(function () {
+								deferred.resolve(settings);
+							}, function (e) {
+								deferred.reject(e);
+							});
 						} catch (e) {
 							deferred.reject(e);
 						}
@@ -218,10 +180,14 @@
 						var deferred = $q.defer();
 
 						try {
-							deferred.resolve(Store.set(id, {
+							storageService.setItem(this.key(id), {
 								key: id,
 								value: val
-							}));
+							}).then(function (settingObj) {
+								deferred.resolve(settingObj ? settingObj.value : defaults[id]);
+							}, function (e) {
+								deferred.reject(e)
+							});
 						} catch (e) {
 							deferred.reject(e);
 						}
@@ -245,13 +211,14 @@
 		])
 		.factory("TagsService", [
 			"$q",
-			"localStorageService",
-			function ($q, localStorageService) {
-				var KEY_PREFIX = "tag.", lastUpdated, cache = {};
-
-				var Store = new LocalStorageStore("tag.", localStorageService);
+			"$localForage", // localStorageService
+			function ($q, storageService) {
+				var PREFIX = "tag.", lastUpdated, cache = {};
 
 				return {
+					key: function (id) {
+						return PREFIX + id;
+					},
 					newId: function () {
 						// this is as good as anything, I guess
 						return new Date().getTime();
@@ -260,24 +227,31 @@
 						var deferred = $q.defer();
 
 						try {
-							deferred.resolve(Store.get(id, Tag) || {});
+							storageService.getItem(this.key(id))
+								.then(function (tagObj) {
+									deferred.resolve(new Tag(tagObj));
+								}, function (e) {
+									deferred.reject(e)
+								});
 						} catch (e) {
 							deferred.reject(e);
 						}
 
 						return deferred.promise;
+
 					},
 					fetchByBarcodeText: function (barcodeText) {
 						var deferred = $q.defer();
 
 						this.list()
 							.then(function (tags) {
-								for (var i=0; i<tags.length; i++) {
+								for (var i = 0; i < tags.length; i++) {
 									if (tags[i] && tags[i].barcode && tags[i].barcode.text === barcodeText) {
 										deferred.resolve(tags[i]);
-										break;
+										return;
 									}
 								}
+
 								deferred.reject();
 							}, function (e) {
 								deferred.reject(e);
@@ -286,19 +260,29 @@
 						return deferred.promise;
 					},
 					list: function (sortOrder) {
-						var deferred = $q.defer();
+						var deferred = $q.defer(), tags = [];
 
 						if (cache.lastUpdated === lastUpdated && cache.data) {
 							deferred.resolve(new TagSort(cache.data).sort(sortOrder));
+
 							return deferred.promise;
 						}
 
 						try {
-							cache = {
-								lastUpdated: lastUpdated,
-								data: Store.list(Tag)
-							}
-							deferred.resolve(new TagSort(cache.data).sort(sortOrder));
+							storageService.iterate(function (tagObj, key) {
+								if (!key || key.indexOf(PREFIX) !== 0) { return; }
+
+								tags.push(new Tag(tagObj));
+							}).then(function () {
+								cache = {
+									lastUpdated: lastUpdated,
+									data: tags
+								}
+
+								deferred.resolve(new TagSort(cache.data).sort(sortOrder));
+							}, function (e) {
+								deferred.reject(e);
+							});
 						} catch (e) {
 							deferred.reject(e);
 						}
@@ -322,7 +306,12 @@
 						}
 
 						try {
-							deferred.resolve(Store.set(tagObj.id, tagObj));
+							storageService.setItem(this.key(tagObj.id), tagObj)
+								.then(function (tagObj) {
+									deferred.resolve(new Tag(tagObj));
+								}, function (e) {
+									deferred.reject(e)
+								});
 						} catch (e) {
 							deferred.reject(e);
 						}
@@ -335,9 +324,7 @@
 						lastUpdated = new Date();
 
 						try {
-							Store.remove(id);
-
-							deferred.resolve();
+							return storageService.removeItem(this.key(id));
 						} catch (e) {
 							deferred.reject(e);
 						}

@@ -14,7 +14,7 @@
 	</ion-nav-buttons>
 	<ion-content padding="true">
 		<div ng-controller="TagNavigationController" on-swipe-left="goToTag(tag, 1)" on-swipe-right="goToTag(tag, -1)">
-			<key-tag tag="tag" on-change="save(tag)"></key-tag>
+			<key-tag tag="tag" on-change="save(true)"></key-tag>
 			<button class="button button-block button-positive" ng-click="displayTag()">
 				Use this Key Tag
 			</button>

@@ -6,7 +6,7 @@
 			"ionic",
 			"ionic.service.core",
 			"ionic.service.deploy",
-			"LocalStorageModule",
+			"LocalForageModule",
 			"ngCordova",
 			TagsApp.name + ".constants",
 			TagsApp.name + ".controllers",
@@ -84,8 +84,8 @@
 			"$ionicAppProvider",
 			"$stateProvider",
 			"$urlRouterProvider",
-			"localStorageServiceProvider",
-			function ($ionicAppProvider, $stateProvider, $urlRouterProvider, localStorageServiceProvider) {
+			"$localForageProvider",
+			function ($ionicAppProvider, $stateProvider, $urlRouterProvider, $localForageProvider) {
 				$ionicAppProvider.identify({
 					// The App ID (from apps.ionic.io) for the server
 					app_id: "eff6a445",
@@ -95,7 +95,10 @@
 					gcm_id: "826581724252"
 				});
 
-				localStorageServiceProvider.setPrefix(TagsApp.name);
+				$localForageProvider.config({
+					name: TagsApp.name,
+					version: 1.0
+				});
 
 				$stateProvider
 					.state("app", {

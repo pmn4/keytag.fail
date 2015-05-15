@@ -4,6 +4,7 @@
 			<option>What's your Q?</option>
 			<option value="safe">I'm nervous. Is my data safe?</option>
 			<option value="wtf">Hey, what the hell? It didn't work.</option>
+			<option value="ask">Nope, still have questions...</option>
 		</select>
 	</ion-header-bar>
 	<ion-content padding="true" has-header="true" has-subheader="true">
@@ -14,7 +15,7 @@
 					Totally.
 				</p>
 				<p>
-					<strong class="assertive">
+					<strong class="positive">
 						Your barcode data is stored on your phone only.
 					</strong>
 				</p>
@@ -22,8 +23,8 @@
 					This app does send some information to an analytics
 					service (Google Analytics), but the information is
 					limited to page views and a few events.  It is mostly
-					to let me (me:
-					<a href="twitter://user?screen_name=gcpmn">@gcpmn on
+					to let me
+					(<a href="twitter://user?screen_name=gcpmn">@gcpmn on
 					twitter</a>) know which issuers' barcode scanners I
 					need to work on next.
 				</p>
@@ -62,6 +63,17 @@
 					ideas of how to beat the system.
 				</p>
 				<img src="/img/gob-magic.gif" />
+			</div>
+		</div>
+		<div class="question" ng-show="q === 'ask'">
+			<img src="./img/questions.gif" />
+			<div class="answer">
+				<p>
+					Go ahead, ask away:
+				</p>
+				<a href="twitter://user?screen_name=gcpmn" class="button button-outline button-block button-positive icon-left ion-social-twitter">
+					@gcpmn
+				</a>
 			</div>
 		</div>
 	</ion-content>

@@ -73,10 +73,7 @@
 				};
 
 				// initialize
-				$rootScope.settings = {
-					showHistory: true,
-					sortOrder: "name"
-				};
+				$rootScope.settings = {};
 				function fetchSettings() {
 					SettingsService.list()
 						.then(function (settings) {
@@ -92,7 +89,7 @@
 				// iterate over all settings?
 				// use localService.bind?
 				$scope.$watch("settings.showHistory", function (val, previousVal) {
-					if (val === previousVal) { return; }
+					if (previousVal === undefined || val === previousVal) { return; }
 
 					SettingsService.setShowHistory(val)
 						.then(function () {
@@ -103,7 +100,7 @@
 						});
 				});
 				$scope.$watch("settings.sortOrder", function (val, previousVal) {
-					if (val === previousVal) { return; }
+					if (previousVal === undefined || val === previousVal) { return; }
 
 					SettingsService.setSortOrder(val)
 						.then(function () {
@@ -301,7 +298,11 @@
 					TagsService.save($scope.tag)
 						.then(function (tag) {
 							$rootScope.$broadcast(Events.UpdateTag, tag);
-							$scope.trackEvent("TagDetail", "Save", tag.issuer, 1);
+
+							if (notify) {
+								// save happens a lot, so if it warrants notifying the user, log it
+								$scope.trackEvent("TagDetail", "Save", tag.issuer, 1);
+							}
 						}, function (message) {
 							$scope.trackEvent("TagDetail", "Save", message, 1);
 						});
@@ -467,8 +468,8 @@
 			function ($scope, $stateParams) {
 				$scope.q = $stateParams.q;
 
-				$scope.$on("$ionicView.enter", function () {
-					$scope.trackView("Faq");
+				$scope.$watch("q", function (val) {
+					$scope.trackView(["Faq", val].join("#"));
 				});
 			}
 		])
