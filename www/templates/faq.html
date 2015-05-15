@@ -1,6 +1,6 @@
 <ion-view view-title="Got Questions? Got Answers.">
 	<ion-header-bar class="bar bar-subheader">
-		<select ng-model="q" class="full-width">
+		<select ng-model="q" class="full-width" ng-change="gotoQ(q)">
 			<option>What's your Q?</option>
 			<option value="safe">I'm nervous. Is my data safe?</option>
 			<option value="wtf">Hey, what the hell? It didn't work.</option>
@@ -8,7 +8,7 @@
 		</select>
 	</ion-header-bar>
 	<ion-content padding="true" has-header="true" has-subheader="true">
-		<div class="question" ng-show="q === 'safe'">
+		<div class="question" ng-show="query === 'safe'">
 			<img src="./img/nervous.gif" />
 			<div class="answer">
 				<p>
@@ -35,7 +35,7 @@
 				</p>
 			</div>
 		</div>
-		<div class="question" ng-show="q === 'wtf'">
+		<div class="question" ng-show="query === 'wtf'">
 			<img src="./img/wtf.gif" />
 			<div class="answer">
 				<p>
@@ -65,7 +65,7 @@
 				<img src="/img/gob-magic.gif" />
 			</div>
 		</div>
-		<div class="question" ng-show="q === 'ask'">
+		<div class="question" ng-show="query === 'ask'">
 			<img src="./img/questions.gif" />
 			<div class="answer">
 				<p>

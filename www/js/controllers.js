@@ -464,12 +464,18 @@
 
 		.controller("FaqController", [
 			"$scope",
+			"$state",
 			"$stateParams",
-			function ($scope, $stateParams) {
+			function ($scope, $state, $stateParams) {
 				$scope.q = $stateParams.q;
+				$scope.query = $stateParams.q;
 
-				$scope.$watch("q", function (val) {
-					$scope.trackView(["Faq", val].join("#"));
+				$scope.gotoQ = function (q) {
+					$state.go("app.faq", { q: q });
+				};
+
+				$scope.$on("$ionicView.enter", function () {
+					$scope.trackView(["Faq", $stateParams.q].join("#"));
 				});
 			}
 		])
