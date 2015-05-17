@@ -1,5 +1,6 @@
 todo:
 - hold to delete usage
+- test all barcode formats
 
 bugs:
 
