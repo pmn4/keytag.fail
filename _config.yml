@@ -1,9 +1,9 @@
 # Site settings
 title: keytag.fail
 email: pat@pmnewell.com
-description: > # this means to ignore newlines until "baseurl:"
-	app to replace all those car key ring barcodes. grocery store loyalty cards,
-	gym or fitness center barcode, etc
+description: >
+  app to replace all those car key ring barcodes. grocery store loyalty cards,
+  gym or fitness center barcode, etc
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://www.keytag.fail" # the base hostname & protocol for your site
 twitter_username: gcpmn
