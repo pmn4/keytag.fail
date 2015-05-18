@@ -1,14 +1,21 @@
 <ion-view view-title="App Update in Progress">
 	<ion-content padding="true">
-		<h6>
-			<span ng-show="downloadProgress < 1.0">Downloading app update</span>
-			<span ng-show="downloadProgress > 0.0">Download complete.</span>
-		</h6>
-		<progress value="{{ downloadProgress }}" max="1.0"></progress>
-		<h6>
-			<span ng-show="extractionProgress < 1.0">Installing new version</span>
-			<span ng-show="extractionProgress > 0.0">App update complete.</span>
-		</h6>
-		<progress value="{{ extractionProgress }}" max="1.0"></progress>
+		<div>
+			<h6>
+				<span ng-show="downloadProgress < 1.0">Downloading app update</span>
+				<span ng-show="downloadProgress >= 1.0">Download complete.</span>
+			</h6>
+			<progress value="{{ downloadProgress }}" max="1.0"></progress>
+		</div>
+		<div ng-show="downloadProgress >= 1.0">
+			<h6>
+				<span ng-show="extractionProgress < 1.0">Installing new version</span>
+				<span ng-show="extractionProgress >= 1.0">App update complete.</span>
+			</h6>
+			<progress value="{{ extractionProgress }}" max="1.0"></progress>
+		</div>
+		<div ng-show="extractionProgress >= 1.0">
+			<h6>Restarting</h6>
+		</div>
 	</ion-content>
 </ion-view>
