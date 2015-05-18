@@ -37,7 +37,7 @@
 							position: AdMob.AD_POSITION.BOTTOM_CENTER,
 							bgColor: "black",
 							autoShow: true,
-							overlap: true,
+							overlap: false,
 							orientationRenew: false
 						});
 					}
