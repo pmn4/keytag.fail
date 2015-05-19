@@ -15,7 +15,10 @@
    id="svg4230"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="feature-graphic.svg">
+   sodipodi:docname="feature-graphic.svg"
+   inkscape:export-filename="/Users/pmn/code/personal/keytag.fail/resources/graphics/feature-graphic.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs4232">
     <clipPath
@@ -90,9 +93,9 @@
      showgrid="false"
      inkscape:window-width="1280"
      inkscape:window-height="751"
-     inkscape:window-x="0"
+     inkscape:window-x="28"
      inkscape:window-y="0"
-     inkscape:window-maximized="1"
+     inkscape:window-maximized="0"
      units="px" />
   <metadata
      id="metadata4235">
