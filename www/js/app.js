@@ -73,6 +73,7 @@
 							$ionicDeploy.load();
 						}
 					}, function (error) {
+						console.log(error);
 						// Error checking for updates
 					})
 
