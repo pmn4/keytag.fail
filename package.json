@@ -15,15 +15,21 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
-    "org.apache.cordova.device",
-    "org.apache.cordova.console",
     "com.ionic.keyboard",
     "com.danielcwilson.plugins.googleanalytics",
     "cordova",
-    "com.google.cordova.admob",
-    "org.apache.cordova.inappbrowser"
+    "cordova-plugin-console",
+    "cordova-plugin-device",
+    "cordova-plugin-inappbrowser",
+    "cordova-plugin-admobpro",
+    "cordova-plugin-extension",
+    {
+      "locator": "https://github.com/wildabeast/BarcodeScanner.git",
+      "id": "com.phonegap.plugins.barcodescanner"
+    }
   ],
   "cordovaPlatforms": [
-    "ios"
+    "ios",
+    "android"
   ]
 }

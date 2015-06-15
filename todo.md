@@ -1,6 +1,5 @@
 todo:
 - hold to delete usage
-- test all barcode formats
 
 bugs:
 
@@ -22,6 +21,7 @@ done:
 - tag sort order
 - displaying barcodes
 - tag sort order (might be a data issue?)
+- test all barcode formats
 
 backlog:
 - send tag (to another device, to a family member, etc)

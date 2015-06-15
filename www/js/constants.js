@@ -19,23 +19,23 @@
 			nativeApp: !!window.cordova
 		})
 		.constant("BarCodeFormatMap", {
-			AZTEC: "azteccode",
-			CODABAR: "",
-			CODE_39: "code39",
-			CODE_93: "code93",
-			CODE_128: "code128",
-			DATA_MATRIX: "datamatrix",
-			EAN_8: "ean8",
-			EAN_13: "ean13",
-			ITF: "itf14",
-			MAXICODE: "msi", // maybe?
-			PDF_417: "pdf417",
-			QR_CODE: "qrcode",
-			RSS_14: "",
-			RSS_EXPANDED: "",
-			UPC_A: "upca",
-			UPC_E: "upce",
-			UPC_EAN_EXTENSION: ""
+			// AZTEC: "azteccode", // cannot scan
+			CODABAR: "rationalizedCodabar", // does not display
+			CODE_39: "code39", // success
+			CODE_93: "code93", // success
+			CODE_128: "code128", // success
+			DATA_MATRIX: "datamatrix", // success
+			EAN_8: "ean8", // success scan/display, missing #s
+			EAN_13: "ean13", // success scan/display, missing #s
+			ITF: "itf14", // success
+			MAXICODE: "msi", // cannot scan
+			// PDF_417: "pdf417", // cannot scan
+			QR_CODE: "qrcode", // success
+			// RSS_14: "", // cannot display
+			// RSS_EXPANDED: "", // cannot display
+			UPC_A: "upca", // success
+			UPC_E: "upce" // success
+			// UPC_EAN_EXTENSION: ""
 		})
 		.constant("OrderByOptions", [
 			{ key: "name", display: "Alphabetical" },

@@ -96,7 +96,8 @@
 						$scope.BarCodeFormats = Object.keys(BarCodeFormatMap);
 
 						$scope.openScanner = function () {
-							if (!$window.cordova) {
+							// if in browser, or app simulator (that is, without a camera)
+							if (!$window.cordova || !$window.cordova.plugins || !$window.cordova.plugins.barcodeScanner) {
 								$scope.fruitlessScanAttempt = true;
 								return;
 							}
